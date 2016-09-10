@@ -8,9 +8,32 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "scripts": ["remoteStorage-debug.js", "background.js"]
+    "scripts": ["remotestorage-nocache.js", "background.js"]
+  },
+  "commands": {
+    "toggle-feature-foo": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+1"
+      },
+      "description": "Toggle feature foo",
+      "global": true
+    },
+    "_execute_browser_action": {
+      "suggested_key": {
+        "linux": "Ctrl+B",
+        "default": "Ctrl+B"
+      }
+    },
+    "_execute_page_action": {
+      "suggested_key": {
+        "default": "Ctrl+B",
+        "windows": "Alt+Shift+P",
+        "mac": "Alt+Shift+P"
+      }
+    }
   },
   "permissions": [
+    "identity",
     "tabs",
     "bookmarks",  
     "http://*/*",
