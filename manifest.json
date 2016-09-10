@@ -34,6 +34,7 @@
   },
   "permissions": [
     "identity",
+    "storage",
     "tabs",
     "bookmarks",  
     "http://*/*",

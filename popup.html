@@ -2,25 +2,15 @@
 <html>
   <head>
     <link rel="stylesheet" href="style.css">
-    <script src="remotestorage-nocache.js"></script>
-    <script src="sha1.js"></script>
-    <script src="popup.js"></script>
+    <script src='popup.js'></script>
   </head>
   <body>
-    <div id="remotestorage-connect"></div>
-    <br/><br/><br/>
-    <div id="intro" style="display:none;">
-      I will sync your bookmarks once you connect above!
-    </div>
-    <div id="connected-info" style="display:none;">
-      You're connected!
 
-      <button id="push-all">Push</button>
-      <button id="pull-all">Pull</button>
-
-      <div id="not-impl" style="font-style:italic;display:none;">Sorry, not yet implemented.</div>
-      <div id="succ" style="font-style:italic;display:none;">Successful!</div>
+    <div class="field" id='field'>
+      <label for='tags'>TAGS</label>
+      <input id='tags'/>
     </div>
+
   </body>
 </html>
 

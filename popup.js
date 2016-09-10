@@ -1,36 +1,61 @@
-window.addEventListener('DOMContentLoaded', function () {
-  console.error('DOM content loaded ! ')
+;(function () {
+  window.addEventListener('DOMContentLoaded', loaded)
 
-  // var remoteStorage = new RemoteStorage({
-  //   logging: true,  // defaults to false
-  // })
-
-  // remoteStorage.access.claim('bookmarks','rw')
-
-  // remoteStorage.
-
-  // remoteStorage.displayWidget('remotestorage-connect')
-  // chrome.tabs.create({url: 'http://autistici.org'}, function(tab) {
-  // localStorage.setItem('auth-tab-id', tab.id)
-  // })
-  function getParameterByName (url, name) {
-    var match = RegExp('[?&#]' + name + '=([^&]*)').exec(url.search)
-    return match && decodeURIComponent(match[1].replace(/\+/g, ' '))
+  function loaded () {
+    chrome.tabs.query({ currentWindow: true, active: true }, getCurrentTab)
   }
-  var url = 'https://mystuff.ns0.it/rs/oauth/les?client_id=ciao&response_type=token&scope=bookmarks&redirect_uri=' + chrome.identity.getRedirectURL()
-  chrome.identity.launchWebAuthFlow({url: url, interactive: true}, (ret) => {
-    console.error(ret)
-    console.error(getParameterByName(ret,'access_token'))
-    remoteStorage.remote.configure({
-      token: getParameterByName(ret,'access_token')
-    })
-  })
-  // remoteStorage.connect('les@mystuff.ns0.it/rs')
-  // remoteStorage.on('ready', console.log.bind(console.log) )
-  // remoteStorage.on('connected', console.log.bind(console.log) )
-  // remoteStorage.on('disconnected', console.log.bind(console.log) )
 
-})
+  function getCurrentTab (tab) {
+    var field = document.getElementById('field')
+    var tags = document.getElementById('tags')
+    tags.focus()
+    tags.addEventListener('keypress', (e) => {
+      if (e.keyCode === 13) done(tab, ['test'])
+    })
+  }
+
+  function done (tab, tags) {
+    field.classList = 'field done'
+    document.body.classList = 'done'
+    addBookmark(tab[0].url, tab[0].title)
+    setTimeout(window.close, 900)
+  }
+
+  function addBookmark (url, title) {
+    chrome.bookmarks.create({'title': title, 'url': url})
+  }
+})()
+
+// var remoteStorage = new RemoteStorage({
+//   logging: true,  // defaults to false
+// })
+
+// remoteStorage.access.claim('bookmarks','rw')
+
+// remoteStorage.
+
+// remoteStorage.displayWidget('remotestorage-connect')
+// chrome.tabs.create({url: 'http://autistici.org'}, function(tab) {
+// localStorage.setItem('auth-tab-id', tab.id)
+// })
+// function getParameterByName (url, name) {
+//   var match = RegExp('[?&#]' + name + '=([^&]*)').exec(url.search)
+//   return match && decodeURIComponent(match[1].replace(/\+/g, ' '))
+// }
+// var url = 'https://mystuff.ns0.it/rs/oauth/les?client_id=ciao&response_type=token&scope=bookmarks&redirect_uri=' + chrome.identity.getRedirectURL()
+// chrome.identity.launchWebAuthFlow({url: url, interactive: true}, (ret) => {
+//   console.error(ret)
+//   console.error(getParameterByName(ret,'access_token'))
+//   remoteStorage.remote.configure({
+//     token: getParameterByName(ret,'access_token')
+//   })
+// })
+// remoteStorage.connect('les@mystuff.ns0.it/rs')
+// remoteStorage.on('ready', console.log.bind(console.log) )
+// remoteStorage.on('connected', console.log.bind(console.log) )
+// remoteStorage.on('disconnected', console.log.bind(console.log) )
+
+// })
 
 //   console.error(remoteStorage)
 
