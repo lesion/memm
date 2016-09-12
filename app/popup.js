@@ -1,6 +1,9 @@
-//import storage from 'chrome-storage-promise'
-;(function () {
+/* global chrome */
+'use strict'
 
+import storage from './storage'
+;(function () {
+  // alert(storage)
   window.addEventListener('DOMContentLoaded', loaded)
 
   function loaded () {
@@ -8,28 +11,20 @@
   }
 
   function getCurrentTab (tab) {
-    var field = document.getElementById('field')
     var tags = document.getElementById('tags')
     tags.focus()
     tags.addEventListener('keypress', (e) => {
-      if (e.keyCode === 13) done(tab, ['test'])
+      if (e.keyCode === 13) done(tab, tags.value.split(','))
     })
   }
 
   function done (tab, tags) {
+    var field = document.getElementById('field')
     field.classList = 'field done'
     document.body.classList = 'done'
-    addBookmark(tab[0].url, tab[0].title, tags)
-    setTimeout(window.close, 900)
-  }
-
-  function addBookmark (url, title, tags) {
-    // per ogni tag, prendo gli url che ci sono gia'
-    tags.forEach((tag) => {
-      chrome.storage.local.get(`tag:${tag}`)
-      chrome.storage.local.set()
-      chrome.bookmarks.create({'title': title, 'url': url})
-    })
+    storage.set(tab[0].url, tags)
+    // addBookmark(tab[0].url, tab[0].title, tags)
+    // setTimeout(window.close, 900)
   }
 })()
 

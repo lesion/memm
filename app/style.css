@@ -1,0 +1,60 @@
+body {
+  box-sizing: border-box;
+  background-color: #f1f1f1;
+  width: 300px;
+  margin: 0px;
+  padding: 2px;
+  overflow: hidden;
+  transition: width .3s;
+}
+
+.field {
+  width: 400px;
+  overflow: hidden;
+  transition: margin .3s ease-in;
+}
+
+.field.done {
+  margin-left: -295px;
+}
+
+body.done {
+  width: 65px;
+}
+
+label {
+  font-weight: bold;
+  font-family: Arial;
+  font-size: 16px;
+  padding: 6px;
+  border-bottom: 2px solid #666;
+  float: left;
+}
+
+input {
+  background-color: transparent;
+  font-size: 16px;
+  margin-left: -2px;
+  font-family: Arial;
+  width: 230px;
+  padding: 6px;
+  border: 0px;
+  border-bottom: 2px solid #666;
+}
+
+input:focus {
+  outline: none;
+  border: 0px;
+  border-bottom: 2px solid #aaa;
+}
+
+.field::after {
+  position: absolute;
+  content: "DONE";
+  width: 65px;
+  font-weight: bold;
+  font-family: Arial;
+  font-size: 16px;
+  padding: 6px;
+  border-bottom: 2px solid #699;
+}
