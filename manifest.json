@@ -14,10 +14,12 @@
   "icons": {
     "16": "icon.png"
   },
-  "execute_browser_action": {
-    "suggested_key": {
-      "linux": "Ctrl+B",
-      "default": "Ctrl+B"
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "linux": "Ctrl+B",
+        "default": "Ctrl+B"
+      }
     }
   },
   "permissions": [
