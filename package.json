@@ -4,7 +4,8 @@
   "description": "- ctrl + b, popup open .. - get current tab info (url, title) - search if already bookmarked and show saved tags - add tags - add url if not exists with the id inside url:hash - add for each specified tags the url id",
   "main": "background.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --compilers js:babel-core/register --colors -w ./test/*.js",
+    "dev": "webpack -w"
   },
   "repository": {
     "type": "git",
@@ -17,13 +18,17 @@
   },
   "homepage": "https://github.com/lesion/remotestorage-bookmarks-chrome#readme",
   "dependencies": {
-    "chrome-storage-promise": "^0.1.0"
+    "chrome-storage-promise": "^0.1.0",
+    "remotestoragejs": "git://github.com/remotestorage/remotestorage.js.git#feature/949-noglobal",
+     "remotestorage-module-bookmarks": "git://github.com/lesion/remotestorage-module-bookmarks.git"
   },
   "devDependencies": {
     "babel-cli": "^6.14.0",
     "babel-core": "^6.14.0",
     "babel-loader": "^6.2.5",
     "babel-preset-es2015": "^6.14.0",
+    "chai": "^3.5.0",
+    "localstorejs": "^0.1.9",
     "webpack": "^1.13.2"
   }
 }

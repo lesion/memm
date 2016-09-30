@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "description": "",
   "browser_action":{
-    "default_icon": { "16" : "icon.png" },
+    "default_icon": { "16" : "dist/remoteStorage.png" },
     "default_popup": "dist/popup.html"
   },
   "omnibox": { "keyword" : "." },
@@ -14,7 +14,7 @@
   "icons": {
     "16": "icon.png"
   },
-  "_execute_browser_action": {
+  "execute_browser_action": {
     "suggested_key": {
       "linux": "Ctrl+B",
       "default": "Ctrl+B"
