@@ -4,10 +4,11 @@ const production = process.env.production
 module.exports = {
   entry: {
     'popup.js': './app/popup.js',
-    'background.js': './app/background.js'
+    'background.js': './app/background.js',
+    'options.js': './app/options.js'
   },
   output: {
-    path: 'dist',
+    path: 'lib',
     filename: '[name]'
   },
   externals: { 'xmlhttprequest': 'XMLHttpRequest' },
