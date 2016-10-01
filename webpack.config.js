@@ -1,7 +1,5 @@
 const path = require('path')
-const htmlWebpackPlugin = require('html-webpack-plugin')
 const production = process.env.production
-
 
 module.exports = {
   entry: {
@@ -15,7 +13,7 @@ module.exports = {
   externals: { 'xmlhttprequest': 'XMLHttpRequest' },
   module: {
     loaders: [
-      {test: /\.js$/, exclude: '/node_modules/', loader: 'babel' },
+      {test: /\.js$/, exclude: '/node_modules/', loader: 'buble' },
       {test: /\.vue/, loader: 'vue' }
     ]
   },
