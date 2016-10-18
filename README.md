@@ -1,8 +1,9 @@
-## FLOW
+## memm
+### A Chrome extension to tag your bookmarks
 
-- ctrl + b, popup open ..
-- get current tab info (url, title)
-- search if already bookmarked and show saved tags
-- add tags
-- add url if not exists with the id inside url:hash
-- add for each specified tags the url id
+### Features:
+- Tag you bookmark with ctrl+b
+- Bookmarks are stored with remotestorege.js
+- You can add multiple tag to each bookmark
+- While tagging, a list of matched url is shown
+- Omnibar support: press .<tab> on urlbar and write your tag
