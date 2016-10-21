@@ -1,27 +1,36 @@
-const path = require('path')
-const production = process.env.production
-
+var path = require('path')
+var CopyWebpackPlugin = require('copy-webpack-plugin')
 module.exports = {
   entry: {
-    'popup.js': './app/popup.js',
-    'background.js': './app/background.js',
-    'options.js': './app/options.js'
+    build: './app/main',
+    background: './app/background',
+    vendor: ['remotestoragejs',
+      'remotestorage-module-bookmarks',
+      'vue' ]
   },
   output: {
-    path: 'lib',
-    filename: '[name]'
+    path: 'dist',
+    filename: '[name].js'
   },
   externals: { 'xmlhttprequest': 'XMLHttpRequest' },
+  plugins: [
+    new CopyWebpackPlugin([
+      {from: 'app/popup.html'},
+      {from: 'app/options.html'},
+      {context: 'assets/', from: '**/*'}
+    ])
+  ],
   module: {
     loaders: [
-      {test: /\.js$/, exclude: '/node_modules/', loader: 'buble' },
-      {test: /\.vue/, loader: 'vue' }
+      { test: /\.js$/, exclude: '/node_modules|dist/', loader: 'babel' },
+      { test: /\.vue/, loader: 'vue', exclude: '/node_modules/' },
+      { test: /\.png/, loader: 'url' }
     ]
   },
-  resolveLoader: { fallback: path.join(__dirname, "node_modules") },
+  resolveLoader: { fallback: path.join(__dirname, 'node_modules') },
   devtool: 'source-map',
   resolve: {
-    fallback: path.join(__dirname, "node_modules"),
+    fallback: path.join(__dirname, 'node_modules'),
     // resolve file extensions
     extensions: ['.js', '', '.vue']
   }
