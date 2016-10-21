@@ -1,22 +1,22 @@
 <template lang='pug'>
-#rs-widget.rs-widget.rs-state-initial.rs-floating
+#rs-widget.rs-widget.rs-floating(:class='state')
 
-  img.rs-main-logo(src='../assets/remoteStorage.png')
+  img.rs-main-logo.loading(src='img/remoteStorage.png')
 
-  .rs-box-initial
+  .rs-box-initial(@click='changeState(\'choose\')')
     h1.rs-small-headline Connect Remote Storage
     span.rs-sub-headline To own and control your data
 
   .rs-box-connected
     .rs-connected-text
-      h1.rs-user.rs-small-headline gilli@axe.is
+      h1.rs-user.rs-small-headline {{userName}}
       span.rs-sub-headline Synced 2 min ago
 
     .rs-connected-buttons
-      button.rs-button.rs-button-small.rs-disconnect(title='Disconnect')
-        img.rs-icon.rs-power-icon
+      button.rs-button.rs-button-small.rs-disconnect(title='Disconnect',@click='disconnect')
+        img.rs-icon.rs-power-icon(src='img/power.png')
       button.rs-button.rs-button-small.rs-sync(title='Sync now')
-        img.rs-icon.rs-loop-icon
+        img.rs-icon.rs-loop-icon(src='img/loop.png')
 
   .rs-box-choose
     .rs-box-choose-content
@@ -26,21 +26,21 @@
 
       p.rs-choose-backend Please choose your storage:
       .rs-button-wrap
-        button.rs-button.rs-button-big.rs-choose-rs
-          img.rs-logo
+        button.rs-button.rs-button-big.rs-choose-rs(@click='changeState(\'sign-in\')')
+          img.rs-logo(src='img/remoteStorage.png')
           div Remote Storage
-        button.rs-button.rs-button-big.rs-choose-dropbox
-          img.dropbox-logo
+        button.rs-button.rs-button-big.rs-choose-dropbox(@click='connect(\'dropbox\')')
+          img.dropbox-logo(src='img/dropbox.png')
           div Dropbox
-        button.rs-button.rs-button-big.rs-choose-gdrive
-          img.gdrive-logo
+        button.rs-button.rs-button-big.rs-choose-gdrive(@click='connect(\'gdrive\')')
+          img.gdrive-logo(src='img/gdrive.png')
           div Google Drive
 
   .rs-box-sign-in
     .rs-sign-in-content
-      form.rs-sign-in-form(name='rs-sign-in-form')
+      form.rs-sign-in-form(name='rs-sign-in-form', @submit.prevent='connect(\'RS\')')
         h1.rs-big-headline Connect your Remote Storage
-        input#rsUser(type='text',placeholder='user@provider.com')
+        input#rsUser(type='text',placeholder='user@provider.com',v-model='user')
         input.rs-connect(type='submit',value='Connect')
         a.rs-help(href='https://remotestorage.io/get', target='_blank') Need help?
 
@@ -48,29 +48,60 @@
 
 <script>
 
-var remoteStorage = require('remotestoragejs')
-
 module.exports = {
+  props: ['rs'],
+  mounted () {
+    console.error('sono dentro MOUNTED ', this.rs)
+    this.rs.addGlobalEventListener(this.eventListener)
+  },
+  methods: {
+    disconnect () {
+      console.error('sono dentro disconnect !')
+      this.rs.disconnect()
+    },
+    eventListener (eventName) {
+      if (typeof this[eventName] === 'function') {
+        this[eventName](Array.prototype.slice.call(arguments, 1))
+      } else {
+        console.error('EVENTO: ', eventName, Array.prototype.slice.call(arguments, 1))
+      }
+    },
+    error (e) {
+      console.error('SONO DENTRO ERROR: ', e)
+    },
+    notConnected (e) {
+      console.error('DENTRO NOT_CONNECTED ', e)
+    },
+    disconnected (e) {
+      console.error('DENTRO DISCONNECTED ', e)
+      this.changeState('initial')
+    },
+    changeState (state) {
+      console.error('dentro change state ', state)
+      this.state = `rs-state-${state}`
+    },
+    connected ([username]) {
+      console.error('DENTRO CONNECTED!', username)
+      this.userName = username
+      this.changeState('connected')
+    },
+    connect (service) {
+      console.error('sono qui lancio un evento')
+      this.$emit('connect', this.user || service)
+      // this.rs.connect(this.user)
+      // port.postMessage(service === 'RS'?this.user:service)        
+    },
+
+  },
   data () {
     return {
-      ciao: 'prova'
+      userName: '',
+      user: null,
+      state: 'rs-state-initial'
     }
   }
-
-/**
- * RemoteStorage connect widget
- * @constructor
- * @param {object} remoteStorage - remoteStorage instance
- * @param {object} options - Widget options (domID, ...)
- */
-
-
-  // CSS can't animate to unknown height (as in height: auto)
-  // so we need to store the height, set it to 0 and use it when we want the animation
-  // const chooseBox = document.querySelector('.rs-box-choose');
-  // const chooseBoxHeight = chooseBox.clientHeight;
-  // // Set the height to zero until the initial button is clicked
-  // chooseBox.setAttribute("style", "height: 0");
+}
+function start() {
 
   const signInBox = document.querySelector('.rs-box-sign-in');
   const signInContent = document.querySelector('.rs-sign-in-content');
@@ -79,7 +110,6 @@ module.exports = {
   const rsWidget = document.querySelector('#rs-widget');
   const rsLogo = document.querySelector('.rs-main-logo');
   const rsCloseButton = document.querySelector('.rs-close');
-  const rsInitial = document.querySelector('.rs-box-initial');
   const rsChooseRemoteStorageButton = document.querySelector('button.rs-choose-rs');
   const rsChooseDropboxButton = document.querySelector('button.rs-choose-dropbox');
   const rsChooseGoogleDriveButton = document.querySelector('button.rs-choose-gdrive');
@@ -89,64 +119,12 @@ module.exports = {
   const rsConnect = document.querySelector('.rs-connect')
   const rsUser = document.querySelector('#rsUser')
 
-  setEventListeners();
-  setClickHandlers();
 
-  function setEventListeners() {
-    // Sign-in form
-    let rsSignInForm = document.querySelector('.rs-sign-in-form');
-    rsSignInForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-    });
-  }
+  // NEED A REFACTORING !! COPY/PASTE FROM ORIGINAL WIDGET
 
+  setClickHandlers()
   function setClickHandlers() {
-    // Initial button
-    rsInitial.addEventListener('click', () => {
-      console.log("clicked initial button");
-      rsWidget.classList.remove("rs-state-initial");
-      rsWidget.classList.add("rs-state-choose");
-      fadeOut(rsInitial);
-      // Set height of the ChooseBox back to original height.
-      chooseBox.setAttribute("style", "height: " + chooseBoxHeight);
-    });
-
-    // Choose RS button
-    rsChooseRemoteStorageButton.addEventListener('click', () => {
-      console.log("clicked RS button");
-      rsWidget.classList.remove("rs-state-choose");
-      rsWidget.classList.add("rs-state-sign-in");
-      chooseBox.setAttribute("style", "height: 0");
-      signInBox.setAttribute("style", "height: " + chooseBoxHeight + "px"); // Set the sign in box to same height as chooseBox
-      signInContent.setAttribute("style", "padding-top: " + ((chooseBoxHeight - signInContentHeight) / 2) + "px"); // Center it
-    });
-
-    rsConnect.addEventListener('click', () => {
-      console.error('connect !')
-      var port = chrome.extension.connect({name: "mem"});
-      port.postMessage(rsUser.value)
-    })
-
-    // Choose Dropbox button
-    rsChooseDropboxButton.addEventListener('click', () => {
-      console.log("clicked Dropbox button", rs);
-      rs["dropbox"].connect();
-      // rsWidget.classList.remove("rs-state-choose");
-      // rsWidget.classList.add("rs-state-connected");
-      // chooseBox.setAttribute("style", "height: 0");
-      // delayFadeIn(rsConnected, 600);
-    });
-
-    // Choose Google drive button
-    rsChooseGoogleDriveButton.addEventListener('click', () => {
-      console.log("clicked Google drive Button");
-      rs["googledrive"].connect();
-      // rsWidget.classList.remove("rs-state-choose");
-      // rsWidget.classList.add("rs-state-connected");
-      // chooseBox.setAttribute("style", "height: 0");
-      // delayFadeIn(rsConnected, 600);
-    });
-
+  
     // Disconnect button
     rsDisconnectButton.addEventListener('click', () => {
       console.log("clicked disconnect button");
@@ -163,10 +141,10 @@ module.exports = {
     });
 
 
-    // Stop clicks on the widget itthis from triggering the above event
-    rsWidget.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
+    // // Stop clicks on the widget itthis from triggering the above event
+    // rsWidget.addEventListener('click', (e) => {
+    //   e.stopPropagation();
+    // });
 
     // Click on the logo to bring the full widget back
     rsLogo.addEventListener('click', () => {
@@ -221,26 +199,170 @@ module.exports = {
 }
 </script>
 
-<style>
-body {
-  margin: 0px;
+<style lang='stylus'>
+
+.rs-main-logo.loading
+  animation: spin 1.2s infinite ease-in-out
+
+/* Widget */
+.rs-widget
+  max-width: 300px;
+  color: #333;
+  background-color: #fff;
+  border-radius: 3px;
+  padding: 10px;
+  display: inline-block;
+  margin: 10px;
+  overflow: hidden;
+  transition: max-width 300ms ease-out 0ms, background 300ms linear 300ms, box-shadow 300ms linear 300ms;
+  box-sizing: border-box
+  font-family: Ubuntu
+
+  *
+    box-sizing: border-box
+
+  a
+    color: #0093cc
+
+/* Main logo */
+.rs-main-logo
+  float: left
+  margin-left: 45%;
+  transition: margin-left 300ms ease-out
+
+/* Initial Connect remote storage box */
+.rs-box-initial
+  padding: 1px 0
+  margin-left: 45px
+  overflow: hidden
+  white-space: nowrap
+  opacity: 0
+  transition: opacity 300ms ease-out
+
+.rs-box-initial:hover
+  cursor: pointer
+
+.rs-state-initial 
+  .rs-box-initial 
+    opacity: 1
+
+
+
+
+  .rs-main-logo
+    margin-left: 0
+
+.rs-box-choose
+  clear: both
+  text-align: center
+  overflow: hidden
+  height: 0px
+  font-size: 1.3em
+  transition: height 300ms ease-out
+
+  .rs-box-choose-content
+    padding: 0 10px 10px 10px
+
+.rs-state-choose 
+
+  .rs-box-initial
+    position: absolute
+    opacity: 0
+
+  .rs-box-choose
+    height: 414px
+
+
+.rs-box-choose .rs-big-headline {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.rs-box-choose p {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+.rs-box-choose img {
+  float: left;
+  margin-right: 0.625em;
 }
 
-.rs-widget a {
-  color: #0093cc;
+@keyframes spin {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+
 }
+
+
+
+/* Sign in box */
+.rs-box-sign-in
+  text-align: center
+  height: 0
+  overflow: hidden
+  transition: height 300ms ease-out
+
+  .rs-sign-in-content
+    padding: 0 10px 10px 10px
+
+.rs-state-sign-in
+  .rs-box-sign-in
+    height: 250px
+
+.rs-box-sign-in .rs-big-headline {
+  margin-top: 0;
+}
+
+
+.rs-sign-in-form input[type=text] {
+  padding: 15px 10px;
+  display: block;
+  width: 100%;
+  font: inherit;
+  margin-bottom: 20px;
+}
+.rs-sign-in-form input[type=submit] {
+  padding: 15px 10px;
+  margin-bottom: 15px;
+  display: block;
+  width: 100%;
+  border-width: 0;
+  border-radius: 3px;
+  background-color: #3fb34f;
+  font: inherit;
+  color: #fff;
+  transition: box-shadow 200ms, background-color 200ms;
+}
+.rs-sign-in-form input[type=submit]:hover {
+  cursor: pointer;
+  background-color: #4BCB5D;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.1), 0 3px 8px 0 rgba(0,0,0,0.2);
+}
+.rs-sign-in-form input[type=submit]:active {
+  background-color: #3fb34f;
+}
+
+
+
+
 .rs-small-headline {
-  font-size: 1em;
+  font-size: 1.2em;
   font-weight: bold;
   margin: 0;
   margin-bottom: 2px;
 }
 .rs-sub-headline {
   color: #666;
-  font-size: 0.92em;
+  font-size: 1.1em;
 }
 .rs-big-headline {
-  font-size: 1.625em;
+  font-size: 1.725em;
   font-weight: normal;
   display: inline-block;
 }
@@ -274,7 +396,7 @@ body {
   transition: box-shadow 200ms;
 }
 .rs-button-big > div {
-  font-size: 1.125em;
+  font-size: 1.225em;
   padding: 10px 0;
 }
 .rs-button-big:hover {
@@ -288,28 +410,12 @@ body {
   margin-bottom: 0;
 }
 .rs-icon {
+  height: 20px;
   fill: #999;
   transition: fill 300ms ease-out;
 }
 
 
-/* Widget */
-.rs-widget,
-.rs-widget * {
-  box-sizing: border-box;
-  font-family: arial, sans-serif;
-}
-.rs-widget {
-  max-width: 300px;
-  color: #333;
-  background-color: #fff;
-  border-radius: 3px;
-  padding: 10px;
-  display: inline-block;
-  margin: 10px;
-  overflow: hidden;
-  transition: max-width 300ms ease-out 0ms, background 300ms linear 300ms, box-shadow 300ms linear 300ms;
-}
 
 
 /* Hide everything except logo when connected and clicked outside of box */
@@ -327,7 +433,7 @@ body {
 
 
 /* Initial Connect remote storage box */
-.rs-box-initial {
+/*.rs-box-initial {
   padding: 1px 0;
   margin-left: 45px;
   overflow: hidden;
@@ -341,16 +447,9 @@ body {
 }
 .rs-state-choose .rs-box-initial {
   position: absolute;
-}
+}*/
 
 
-/* Main logo */
-.rs-main-logo {
-  float: left;
-  margin-right: 0.625em;
-  transition: margin-left 300ms ease-out;
-  transition-delay: 300ms;
-}
 
 
 /* Choose provider box */
@@ -381,56 +480,24 @@ body {
   margin-right: 0.625em;
 }
 .rs-state-choose .rs-box-choose {
-  transition-delay: 300ms;
+  transition-delay: 350ms;
 }
 
-
-/* Sign in box */
-.rs-box-sign-in {
-  text-align: center;
-  height: 0;
-  overflow: hidden;
-  transition: height 300ms ease-out;
-}
-.rs-sign-in-content {
-  padding: 0 10px 10px 10px;
-}
-.rs-box-sign-in .rs-big-headline {
-  margin-top: 0;
-}
-.rs-state-sign-in .rs-main-logo {
-  margin-left: 45%;
-}
-.rs-sign-in-form input[type=text] {
-  padding: 15px 10px;
-  display: block;
-  width: 100%;
-  font: inherit;
-  margin-bottom: 20px;
-}
-.rs-sign-in-form input[type=submit] {
-  padding: 15px 10px;
-  margin-bottom: 15px;
-  display: block;
-  width: 100%;
-  border-width: 0;
-  border-radius: 3px;
-  background-color: #3fb34f;
-  font: inherit;
-  color: #fff;
-  transition: box-shadow 200ms, background-color 200ms;
-}
-.rs-sign-in-form input[type=submit]:hover {
-  cursor: pointer;
-  background-color: #4BCB5D;
-  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.1), 0 3px 8px 0 rgba(0,0,0,0.2);
-}
-.rs-sign-in-form input[type=submit]:active {
-  background-color: #3fb34f;
-}
 
 
 /* Connected box */
+.rs-state-connected
+  .rs-box-connected
+    display: block
+
+  .rs-main-logo
+    margin-left: 0
+    margin-right: 10px
+
+  .rs-box-initial
+    display: none
+
+
 .rs-box-connected {
   display: none;
 }
