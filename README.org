@@ -1,8 +1,0 @@
-
-* remotestorage-bookmarks-chrome
-
-A chrome extension to synchronize all your bookmarks with remotestorage - at some point in the future.
-
-Currently it can just push your bookmarks into remotestorage, not pull them in from there, but that's to come.
-
-To verify that the bookmarks actually ended up in remotestorage, use [[http://seven20.epic720.5apps.com/][seven20]] to browse your data.
