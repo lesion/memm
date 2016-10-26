@@ -1,111 +1,95 @@
 /* global chrome */
+const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
+const GDRIVE_CLIENTID = '603557860486-njmfirchq2gp4k33hqmja0ch6m4puf93.apps.googleusercontent.com'
 
 import RemoteStorage from 'remotestoragejs'
+import 'remotestorage-module-bookmarks'
+
 import util from './util'
+import partial from 'lodash.partial'
+import debounce from 'lodash.debounce'
 
-let rs = new RemoteStorage()
-rs.access.claim('bookmarks', 'rw')
+// check first run
+util.option.get('no_first_run')
+.catch(firstRun)
 
-RemoteStorage.Authorize.getLocation = chrome.identity.getRedirectURL
-RemoteStorage.Authorize.setLocation = (url) => {
-  chrome.identity.launchWebAuthFlow({url, interactive: true}, (responseUrl) => {
-      console.error('porcodio sono qua !!!', responseUrl)
-      // if (chrome.runtime.lastError) return
-      let params = util.extractParams(responseUrl)
-      rs.remote.configure({token: params.access_token})
+let currentTabInfo = null
+let currentTags = []
+const rs = new RemoteStorage()
+
+function firstRun (e) {
+  util.option.set('no_first_run', true)
+
+  // open option window
+  chrome.runtime.openOptionsPage()
+}
+
+function main () {
+  rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
+  rs.setApiKeys('googledrive', {clientId: GDRIVE_CLIENTID})
+  rs.access.claim('bookmarks', 'rw')
+
+  chrome.omnibox.onInputChanged.addListener(debounce(fillOmnibox, 10))
+  // chrome.omnibox.onInputStarted.addListener(getCurrentTabInfo)
+  chrome.runtime.onMessage.addListener(gotMessage)
+  chrome.tabs.onUpdated.addListener(getCurrentTabInfo)
+}
+
+main()
+
+function gotMessage (message, sender, cb) {
+  switch (message.msg) {
+    case 'getURLInfo':
+      getURLInfo(message.url)
+        .then(cb)
+      break
+    case 'setTags':
+      rs.bookmarks.archive.store({url: message.url,
+        title: message.title,
+        tags: message.tags})
+      break
+    case 'getMatch':
+      // devo cercare i match per i tag che mi arrivano
+      rs.bookmarks.archive.searchByTags(message.tags)
+        .then(cb)
+  }
+  return true
+}
+
+function fillOmnibox (input, cb) {
+  var tags = input.split(/[\s,]+/)
+  tags = tags.concat(currentTags)
+
+  chrome.omnibox.setDefaultSuggestion({description: `${tags.join(', ')} ❇`})
+
+  rs.bookmarks.archive.searchByTags(tags)
+    .then(partial(util.bookmarks2suggestion, tags))
+    .then(cb)
+}
+
+function getURLInfo (url) {
+  return rs.bookmarks.archive.searchByURL(url)
+}
+
+function getCurrentTabInfo () {
+  // get current tab info
+  return util.getCurrentTabInfo()
+    .then(info => {
+      currentTabInfo = info
+      // get current tags
+      getURLInfo(info.url)
+        .then(bookmark => { currentTags = bookmark.tags })
+        .catch(() => { currentTags = [] })
     })
 }
 
-rs.remote.on('change', e => { console.error('CHANGE: ', e) })
-rs.on('connected', e => { console.error('CONNECTED: ', e) })
-rs.on('wire-done', e => { console.error('WIRE-DONE: ', e) })
-
-chrome.storage.local.get( 'options', ret => {
-  start(ret.options)
-})
-
-function login (options) {
-
-}
-
-function start (options) {
-  console.error('[MEM] Dentro RS!', options)
-  if (options.token && options.username) {
-    auth(options)
+chrome.omnibox.onInputEntered.addListener((url, type) => {
+  if (!util.isUrl(url)) {
+    rs.bookmarks.archive.store({url: currentTabInfo.url,
+      title: currentTabInfo.title,
+      tags: url.split(/[\s,]+/)})
   } else {
-    // blink the icon
+    util.setCurrentTabUrl(url)
   }
-}
-
-// check if we have a saved token and try to use that
-
-// connect to remoteStorage
-
-// in case of auth failure ask for permission
-
-//const bookmark = {
-  //url: 'http://jsunconf.eu',
-  //title: 'JS unconference in Hamburg',
-  //tags: ['javascript', 'conference']
-//}
-
-//import bookmarks from 'remotestorage-module-bookmarks'
-//rs.bookmarks.archive.store(bookmark)
-//.then(console.log.bind(console))
-//.catch(console.error.bind(console))
-
-
-
-// console.error(rs.bookmarks.archive.getAll()
-//   .then(console.log.bind(console))
-//   .catch(console.error.bind(console)))
-
-
-chrome.extension.onConnect.addListener(port => {
-  port.onMessage.addListener(user => {
-    console.error('dentro on message', user)
-    rs.connect(user)
-  })
+  return true
 })
-
-// let currentUrl
-
-// chrome.omnibox.onInputChanged.addListener((input, fn) => {
-//   chrome.omnibox.setDefaultSuggestion({description: `Add ${input} to <url>${currentUrl}</url> ❇`})
-//   storage.search(input.split(/[\s,]+/))
-//     .then(ret => {
-//       let urls = Object.keys(ret)
-//       return urls.map(url => {
-//         return {
-//           content: url,
-//           description: `<url>${url}</url> <match>${ret[url].tags.join(', ')}</match>`
-//         }
-//       })
-//     })
-//     // .then(ret => ret.map(url => ({content: url, description: url})))
-//     .then(suggestions => {
-//       console.error('BACKGROUND ! input changed :', suggestions)
-//       fn(suggestions)
-//     })
-// })
-
-// chrome.omnibox.onInputStarted.addListener(() => {
-//   chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
-//     currentUrl = tabs[0].url
-//   })
-// })
-
-// chrome.omnibox.onInputEntered.addListener((url, type) => {
-//   //   // qui devo controllare se 
-//   // alert(type)
-//   if (!isUrl(url)) {
-//     // qui devo taggare la roba 
-//     storage.add(currentUrl, url.split(/[\s,]+/))
-//     console.error('adding !!')
-//     return
-//   }
-//   chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
-//     chrome.tabs.update(tabs[0].id, {url})
-//   })
-//   return true
-// })
