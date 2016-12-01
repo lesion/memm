@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
   #popup(@keydown='keydown')
     .header
       img.link(src='img/memm_40.png',@click='openOptions')
@@ -23,7 +23,8 @@
 </template>
 
 <script>
-import util from './util.js'
+const util = require('./util')
+
 export default {
   computed: {
     selectedBookmark () {
@@ -128,7 +129,7 @@ export default {
         }
 
         // popup close !
-        window.close()
+        // window.close()
       }
     },
     currentTabInfo (bookmark) {
@@ -153,7 +154,7 @@ export default {
 }
 </script>
 
-<style lang='stylus'>
+<style lang="stylus">
 $orange = #3f4c5a
 $tag = #eee
 

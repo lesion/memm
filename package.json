@@ -5,6 +5,7 @@
   "main": "background.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --colors -w ./test/*.js",
+    "build": "webpack",
     "dev": "webpack -w"
   },
   "repository": {
@@ -20,9 +21,11 @@
   "dependencies": {
     "chrome-storage-promise": "^0.1.0",
     "remotestoragejs": "git://github.com/remotestorage/remotestorage.js.git#feature/949-noglobal",
+    "remotestorage-widget": "git://github.com/remotestorage/remotestorage-widget.git#feature/no-global",
     "remotestorage-module-bookmarks": "git://github.com/lesion/remotestorage-module-bookmarks.git"
   },
   "devDependencies": {
+    "babel-cli": "^6.18.0",
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.5",
     "babel-plugin-transform-class-properties": "^6.16.0",
@@ -47,8 +50,6 @@
     "url-loader": "^0.5.7",
     "vue": "^2.0.1",
     "vue-loader": "^9.5.1",
-    "vue-mdl": "^0.9.4",
-    "vue2-mdl": "^0.3.11",
     "webpack": "^1.13.2"
   }
 }

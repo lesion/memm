@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
 #rs-widget.rs-widget.rs-floating(:class='state')
 
   img.rs-main-logo.loading(src='img/remoteStorage.png')

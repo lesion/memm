@@ -40,6 +40,7 @@ main()
 function gotMessage (message, sender, cb) {
   switch (message.msg) {
     case 'getURLInfo':
+
       getURLInfo(message.url)
         .then(cb)
       break
@@ -68,6 +69,8 @@ function fillOmnibox (input, cb) {
 }
 
 function getURLInfo (url) {
+  console.error('sono dentro getURLInfo di ', url)
+  console.error(rs.bookmarks)
   return rs.bookmarks.archive.searchByURL(url)
 }
 

@@ -24,6 +24,7 @@
       }
     }
   },
+  "content_security_policy":"script-src 'self' 'unsafe-eval'",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2mOtdS7zByvOdB4vzjSb+CWJvNun+D6OiHbXlh+CJBj2o4pw822ibNLxDXMZZce8vyKnxx1e4F1iMXCDQBFY80OI0fVgzAkEcqYU1/vJUdM0hsBVsENB8TjYn1PVTmSJkzdm18v4ZvyEjPl73md1bh/UpwgL/dGHEtjkr7ixpW2fCgUFnBxVNPqkwHe+rcsYTXHG/TLmEJC+0zWxk34iSMR5TFZIg3+9IARiUliLUi+c6xA0iJSTZ0w0VDP+rHQxMRbSo7vLbid1jboDsida0mmtQD7t8hwYk4J3V8GlNuZNDPtIvjHWAo4T9lyfjnUMEC+Vf2+Wj1vHRHFnaPvLBQIDAQAB",
   "permissions": [
     "identity",

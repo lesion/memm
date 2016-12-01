@@ -1,6 +1,5 @@
-<template lang='pug'>
+<template lang="pug">
 #options
-  remoteStorage(@connect='connect',:rs='rs')
   ul
     li(v-for='bookmark in bookmarks')
     
@@ -8,20 +7,30 @@
 
 <script>
 
+const util = require('./util')
+import RemoteStorage from 'remotestoragejs'
+// var RemoteStorage = require('remotestoragejs')
+import 'remotestorage-widget'
+
 const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-umim41h4sit6abt871a92k13r1e1d33q.apps.googleusercontent.com'
 
 // remoteStorageWidget !!
-const remoteStorageWidget = require('./remoteStorage.vue')
+// const remoteStorageWidget = require('./remoteStorage.vue')
 
-const util = require('./util')
-const rs = new RemoteStorage()
+let rs = new RemoteStorage()
+rs.displayWidget()
+
 
 // // oAuth dance (let RS use chrome.identity)
 RemoteStorage.Authorize.getLocation = chrome.identity.getRedirectURL
 RemoteStorage.Authorize.setLocation = (url) => {
   console.error('lancio ', url)
   chrome.identity.launchWebAuthFlow({url, interactive: true}, responseUrl => {
+    if (chrome.runtime.lastError) {
+      console.error(chrome.runtime)
+      console.error(chrome.runtime.lastError)
+    }
     console.error('launchWeb' + responseUrl)
     const token = util.extractToken(responseUrl)
     rs.remote.configure({token})
@@ -31,7 +40,6 @@ RemoteStorage.Authorize.setLocation = (url) => {
 rs.access.claim('bookmarks', 'rw')
 
 module.exports = {
-  components: { remoteStorage: remoteStorageWidget },
   data () {
     return { 
       rs,
