@@ -1,3 +1,5 @@
+'use strict'
+
 /* global chrome */
 const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-njmfirchq2gp4k33hqmja0ch6m4puf93.apps.googleusercontent.com'
@@ -9,22 +11,28 @@ import util from './util'
 import partial from 'lodash.partial'
 import debounce from 'lodash.debounce'
 
-// check first run
-util.option.get('no_first_run')
-.catch(firstRun)
-
 let currentTabInfo = null
 let currentTags = []
-const rs = new RemoteStorage()
+
+let rs
+
+// check if running for the first time
+util.option.get('no_first_run')
+.catch(firstRun)
 
 function firstRun (e) {
   util.option.set('no_first_run', true)
 
-  // open option window
+  // open options window
   chrome.runtime.openOptionsPage()
 }
 
+/**
+ * background process is taking care of RemoteStorage communication
+ * and omnibox
+ */
 function main () {
+  rs = new RemoteStorage()
   rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
   rs.setApiKeys('googledrive', {clientId: GDRIVE_CLIENTID})
   rs.access.claim('bookmarks', 'rw')
@@ -36,6 +44,8 @@ function main () {
 }
 
 main()
+
+
 
 function gotMessage (message, sender, cb) {
   switch (message.msg) {
@@ -69,8 +79,6 @@ function fillOmnibox (input, cb) {
 }
 
 function getURLInfo (url) {
-  console.error('sono dentro getURLInfo di ', url)
-  console.error(rs.bookmarks)
   return rs.bookmarks.archive.searchByURL(url)
 }
 

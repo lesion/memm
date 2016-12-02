@@ -23,6 +23,8 @@
 </template>
 
 <script>
+'use strict'
+
 const util = require('./util')
 
 export default {
@@ -49,7 +51,6 @@ export default {
       chrome.runtime.openOptionsPage()
     },
     removeTag (indexTag) {
-      console.error('sono dentro remove tag !', indexTag)
       this.tags.splice(indexTag, 1)
 
       // cerco i match con la lista dei tag creati ora !
@@ -67,7 +68,6 @@ export default {
         this.selected = 0
     },
     keydown (ev) {
-      console.error(ev)
       if(ev.key == 'ArrowUp') {
         if (this.selected === -1)
           this.selected = this.bookmarks.length-1
@@ -129,11 +129,10 @@ export default {
         }
 
         // popup close !
-        // window.close()
+        window.close()
       }
     },
     currentTabInfo (bookmark) {
-      console.error('sono dentro qui !')
       this.tags = bookmark.tags
       // cerco i match con la lista dei tag creati ora !
       chrome.runtime.sendMessage(null,{msg:'getMatch', tags: this.tags},

@@ -1,3 +1,4 @@
+// this is not used but it's something to publish
 <template lang="pug">
 #rs-widget.rs-widget.rs-floating(:class='state')
 
