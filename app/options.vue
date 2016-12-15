@@ -10,6 +10,7 @@
 const util = require('./util')
 import RemoteStorage from 'remotestoragejs'
 import 'remotestorage-widget'
+const browser = chrome || browser
 
 const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-umim41h4sit6abt871a92k13r1e1d33q.apps.googleusercontent.com'
@@ -19,15 +20,16 @@ rs.displayWidget()
 
 
 // // oAuth dance (let RS use chrome.identity)
-RemoteStorage.Authorize.getLocation = chrome.identity.getRedirectURL
-RemoteStorage.Authorize.setLocation = (url) => {
-  chrome.identity.launchWebAuthFlow({url, interactive: true}, responseUrl => {
-    if (!chrome.runtime.lastError) {
-      const token = util.extractToken(responseUrl)
-      rs.remote.configure({token})
-    }
-  })
-}
+
+ RemoteStorage.Authorize.getLocation = browser.identity.getRedirectURL
+ RemoteStorage.Authorize.setLocation = (url) => {
+   browser.identity.launchWebAuthFlow({url, interactive: true}, responseUrl => {
+     if (!browser.runtime.lastError) {
+       const token = util.extractToken(responseUrl)
+       rs.remote.configure({token})
+     }
+   })
+ }
 
 rs.access.claim('bookmarks', 'rw')
 

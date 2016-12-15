@@ -25,6 +25,7 @@
 <script>
 'use strict'
 
+const browser = chrome || browser;
 const util = require('./util')
 
 export default {
@@ -46,19 +47,29 @@ export default {
       title: ''
     }
   },
+  mounted () {
+    console.error('ciao sono qui dentro ACTIVATED2 !!')
+    util.getCurrentTabInfo()
+    .then(info => {
+      this.url = info.url
+      console.error('sono qui dentro ?!?!?')
+      browser.runtime.sendMessage({msg: 'getURLInfo', tabId: info.id}, null, this.currentTabInfo)
+    })
+    this.$refs.tag.focus()
+  },
   methods: {
     openOptions () {
-      chrome.runtime.openOptionsPage()
+      browser.runtime.openOptionsPage()
     },
     removeTag (indexTag) {
       this.tags.splice(indexTag, 1)
 
       // cerco i match con la lista dei tag creati ora !
-      chrome.runtime.sendMessage(null,{msg:'getMatch', tags: this.tags},
+      browser.runtime.sendMessage({msg:'getMatch', tags: this.tags},
         this.matchBookmarks)
 
       // invio il setTags 
-      chrome.runtime.sendMessage(null, {msg: 'setTags', 
+      browser.runtime.sendMessage( {msg: 'setTags', 
         title: this.title, url: this.url, tags: this.tags}, null)
     },
     matchBookmarks (bookmarks) {
@@ -102,7 +113,7 @@ export default {
         ev.preventDefault()
 
         // cerco i match con la lista dei tag creati ora !
-        chrome.runtime.sendMessage(null,{msg:'getMatch', tags: this.tags},
+        browser.runtime.sendMessage({msg:'getMatch', tags: this.tags},
           this.matchBookmarks)
       } 
 
@@ -124,7 +135,7 @@ export default {
           window.open(this.selectedBookmark.url)
         } else {
           // invio il messaggio al background
-          chrome.runtime.sendMessage(null, {msg: 'setTags', 
+          browser.runtime.sendMessage( {msg: 'setTags', 
             title: this.title, url: this.url, tags: this.tags}, null)
         }
 
@@ -132,23 +143,16 @@ export default {
         window.close()
       }
     },
-    currentTabInfo (bookmark) {
-      this.tags = bookmark.tags
-      // cerco i match con la lista dei tag creati ora !
-      chrome.runtime.sendMessage(null,{msg:'getMatch', tags: this.tags},
-        this.matchBookmarks)
+    currentTabInfo (info) {
+      if (!info.ready) return
+      this.tags = info.bookmark.tags
+      this.bookmarks = info.related.filter(r => r.url !== this.url)
+
+      // controllo se selected punta ad un bookmark esistente
+      if (this.selected!==-1 && bookmarks.length<=this.selected) {
+        this.selected = 0
+      }
     }
-  },
-  mounted () {
-    setTimeout( () => {
-      util.getCurrentTabInfo()
-        .then(info => { 
-          this.url = info.url
-          this.title = info.title
-          chrome.runtime.sendMessage(null, {msg: 'getURLInfo', url: info.url}, null, this.currentTabInfo)
-        })
-      }, 200)
-    this.$refs.tag.focus()
   }
 }
 </script>

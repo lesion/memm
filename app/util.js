@@ -1,5 +1,6 @@
 /* global chrome */
 import intersection from 'lodash.intersection'
+const browser = chrome || browser
 
 module.exports = {
   // convert bookmarks into chrome omnibar suggestions
@@ -15,16 +16,16 @@ module.exports = {
 
   // navigate to url
   setCurrentTabUrl (url) {
-    chrome.tabs.query({ currentWindow: true, active: true },
-      tabs => { chrome.tabs.update(tabs[0].id, {url}) })
+    browser.tabs.query({ currentWindow: true, active: true },
+      tabs => { browser.tabs.update(tabs[0].id, {url}) })
   },
 
   // get current tab info !
   getCurrentTabInfo () {
     return new Promise((resolve, reject) => {
-      chrome.tabs.query({ currentWindow: true, active: true },
+      browser.tabs.query({ currentWindow: true, active: true },
         tabs => {
-          resolve({ url: tabs[0].url, title: tabs[0].title })
+          resolve({ url: tabs[0].url, title: tabs[0].title, id: tabs[0].id })
         })
     })
   },
@@ -42,9 +43,9 @@ module.exports = {
   option: {
     get (name) {
       return new Promise((resolve, reject) => {
-        chrome.storage.local.get(name, items => {
-          if (chrome.runtime.lastError || !items[name]) {
-            reject(new Error(chrome.runtime.lastError))
+        browser.storage.local.get(name, items => {
+          if (browser.runtime.lastError || !items[name]) {
+            reject(new Error(browser.runtime.lastError))
           } else {
             resolve(items)
           }
@@ -52,7 +53,7 @@ module.exports = {
       })
     },
     set (name, value) {
-      chrome.storage.local.set({name: value})
+      browser.storage.local.set({name: value})
     }
   }
 }

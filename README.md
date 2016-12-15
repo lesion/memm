@@ -6,15 +6,13 @@
 
 ### Features
 - You can add multiple tag to each bookmark
-- Bookmarks are stored with remotestorage.js !
+- Bookmarks are stored with [RemoteStorage](https://github.com/remotestorage/remotestorage.js)
 - While tagging, a list of matched url is shown
-- Omnibar support: press .<tab> on urlbar and search by tag
+- Omnibar support: press .<space> on urlbar and search by tag
 - Tag you bookmark with ctrl+b
-
 
 ### Todo
 - Firefox porting
-
 
 ### Big picture wishes ... (writing some notes here...)
 I want a way to link different types of resources:

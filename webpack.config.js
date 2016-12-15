@@ -26,7 +26,7 @@ module.exports = {
     ]
   },
   // resolveLoader: { fallback: path.join(__dirname, 'node_modules') },
-  devtool: 'source-map',
+  devtool: '#source-map',
   resolve: {
     // fallback: path.join(__dirname, 'node_modules'),
     // resolve file extensions
