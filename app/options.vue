@@ -19,17 +19,16 @@ let rs = new RemoteStorage()
 rs.displayWidget()
 
 
-// // oAuth dance (let RS use chrome.identity)
-
- RemoteStorage.Authorize.getLocation = browser.identity.getRedirectURL
- RemoteStorage.Authorize.setLocation = (url) => {
-   browser.identity.launchWebAuthFlow({url, interactive: true}, responseUrl => {
-     if (!browser.runtime.lastError) {
-       const token = util.extractToken(responseUrl)
-       rs.remote.configure({token})
-     }
-   })
- }
+// oAuth dance (let RS use chrome.identity)
+RemoteStorage.Authorize.getLocation = browser.identity.getRedirectURL
+RemoteStorage.Authorize.setLocation = (url) => {
+ browser.identity.launchWebAuthFlow({url, interactive: true}, responseUrl => {
+   if (!browser.runtime.lastError) {
+     const token = util.extractToken(responseUrl)
+     rs.remote.configure({token})
+   }
+ })
+}
 
 rs.access.claim('bookmarks', 'rw')
 
