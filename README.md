@@ -1,4 +1,4 @@
-## memm
+## memm [W.I.P.]
 ### A Chrome extension to tag your bookmarks and store it privately
 
 ### Demo
@@ -9,7 +9,7 @@
 - Bookmarks are stored with [RemoteStorage](https://github.com/remotestorage/remotestorage.js)
 - While tagging, a list of matched url is shown
 - Omnibar support: press .<space> on urlbar and search by tag
-- Tag you bookmark with ctrl+b
+- Tag you bookmark with ctrl+m
 
 ### Todo
 - Firefox porting
