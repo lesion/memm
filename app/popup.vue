@@ -44,16 +44,17 @@ export default {
       url: '',
       bookmarks: [],
       selected: -1,
-      title: ''
+      title: '',
+      tabId: undefined
     }
   },
   mounted () {
-    console.error('ciao sono qui dentro ACTIVATED2 !!')
     util.getCurrentTabInfo()
     .then(info => {
       this.url = info.url
-      console.error('sono qui dentro ?!?!?')
-      browser.runtime.sendMessage({msg: 'getURLInfo', tabId: info.id}, null, this.currentTabInfo)
+      this.title = info.title
+      this.tabId = info.id
+      browser.runtime.sendMessage({msg: 'getURLInfo', url: info.url, tabId: this.tabId}, null, this.currentTabInfo)
     })
     this.$refs.tag.focus()
   },
@@ -65,12 +66,12 @@ export default {
       this.tags.splice(indexTag, 1)
 
       // cerco i match con la lista dei tag creati ora !
-      browser.runtime.sendMessage({msg:'getMatch', tags: this.tags},
-        this.matchBookmarks)
+      // browser.runtime.sendMessage({msg:'getMatch', tags: this.tags},
+        // this.matchBookmarks)
 
       // invio il setTags 
       browser.runtime.sendMessage( {msg: 'setTags', 
-        title: this.title, url: this.url, tags: this.tags}, null)
+        title: this.title, url: this.url, tabId: this.tabId, tags: this.tags}, null, this.currentTabInfo)
     },
     matchBookmarks (bookmarks) {
       this.bookmarks = bookmarks.filter(b => b.url !== this.url)
@@ -79,14 +80,22 @@ export default {
         this.selected = 0
     },
     keydown (ev) {
-      if(ev.key == 'ArrowUp') {
+
+      const ARROW_UP    = 38
+      const ARROW_DOWN  = 40
+      const ENTER       = 13
+      const SPACE       = 32
+      const TAB         = 9
+      const COMMA       = 188
+
+      if(ev.which == ARROW_UP) {
         if (this.selected === -1)
           this.selected = this.bookmarks.length-1
         else
           this.selected -= 1
       }
 
-      if(ev.key === 'ArrowDown') {
+      if(ev.which === ARROW_DOWN) {
         if (this.selected === this.bookmarks.length-1)
           this.selected = -1
         else
@@ -94,7 +103,7 @@ export default {
       }
 
 
-      if(ev.key === ' ' || ev.key === ',' || ev.key === 'Tab') {
+      if(ev.which === SPACE || ev.which === COMMA || ev.which === TAB) {
         // lo pulisco
         const tag = this.tag.replace(/[,\s]+/,'')
 
@@ -113,12 +122,14 @@ export default {
         ev.preventDefault()
 
         // cerco i match con la lista dei tag creati ora !
-        browser.runtime.sendMessage({msg:'getMatch', tags: this.tags},
-          this.matchBookmarks)
+        browser.runtime.sendMessage( {msg: 'setTags', 
+          title: this.title, url: this.url, tabId: this.tabId, tags: this.tags}, null, this.currentTabInfo)
+        // browser.runtime.sendMessage({msg:'getMatch', tags: this.tags},
+          // this.matchBookmarks)
       } 
 
       // aggiungo il tag attuale !
-      if (ev.key === 'Enter') {
+      if (ev.which === ENTER) {
          // lo pulisco
         const tag = this.tag.replace(/[,\s]+/,'')
 
@@ -136,7 +147,7 @@ export default {
         } else {
           // invio il messaggio al background
           browser.runtime.sendMessage( {msg: 'setTags', 
-            title: this.title, url: this.url, tags: this.tags}, null)
+            title: this.title, url: this.url, tags: this.tags, tabId: this.tabId}, null)
         }
 
         // popup close !
@@ -144,9 +155,14 @@ export default {
       }
     },
     currentTabInfo (info) {
-      if (!info.ready) return
+      if (!info) {
+        this.tags = []
+        this.bookmarks = []
+      }
+      // if (!info.ready) return
       this.tags = info.bookmark.tags
-      this.bookmarks = info.related.filter(r => r.url !== this.url)
+      if (info.related)
+        this.bookmarks = info.related.filter(r => r.url !== this.url)
 
       // controllo se selected punta ad un bookmark esistente
       if (this.selected!==-1 && bookmarks.length<=this.selected) {
