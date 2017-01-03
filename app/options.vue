@@ -22,8 +22,9 @@ const browser = chrome || browser
 const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-umim41h4sit6abt871a92k13r1e1d33q.apps.googleusercontent.com'
 
-let rs = new RemoteStorage()
+let rs = new RemoteStorage({logging: true})
 rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
+rs.caching.enable('/bookmarks/')
 
 rs.displayWidget()
 
