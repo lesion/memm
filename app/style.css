@@ -126,6 +126,7 @@ body {
   margin-right: 0.625em;
   transition: margin-left 300ms ease-out;
   transition-delay: 300ms;
+  will-change: margin-left;
 }
 
 

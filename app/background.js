@@ -1,6 +1,11 @@
 /* global chrome */
 'use strict'
 
+/**
+ * background process is taking care of RemoteStorage communication
+ * and omnibox
+ */
+
 const browser = chrome || browser
 const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-njmfirchq2gp4k33hqmja0ch6m4puf93.apps.googleusercontent.com'
@@ -32,11 +37,6 @@ function firstRun (e) {
   // open options window
   browser.runtime.openOptionsPage()
 }
-
-/**
- * background process is taking care of RemoteStorage communication
- * and omnibox
- */
 function main () {
   // initialize RemoteStorage
   rs = new RemoteStorage()
@@ -71,9 +71,9 @@ main()
 
 function eventHandler (event) {
   if (['disconnected', 'network-offline'].includes(event)) {
-    chrome.browserAction.setIcon({path: '/img/offline.png'})
+    browser.browserAction.setIcon({path: '/img/offline.png'})
   } else if (['connected', 'network-online'].includes(event)) {
-    chrome.browserAction.setIcon({path: '/img/online.png'})
+    browser.browserAction.setIcon({path: '/img/online.png'})
   }
 }
 
@@ -118,7 +118,7 @@ function fillOmnibox (input, cb) {
 
   browser.omnibox.setDefaultSuggestion({description: `${tags.join(', ')} ❇`})
 
-  rs.bookmarks.archive.searchByTags(tags)
+  return rs.bookmarks.archive.searchByTags(tags)
     .then(partial(util.bookmarks2suggestion, tags))
     .then(cb)
 }
@@ -150,8 +150,12 @@ function cacheTab (id, updateProperty) {
   if (!updateProperty.status || updateProperty.status !== 'complete') return
   util.getCurrentTabInfo()
   .then(info => updateCache(info.url, id))
+  .catch(e => {
+    console.error('catch', e)
+  })
 }
 
+// TODO
 function removeCachedTab (id) {
   // console.error('removed Cached ', id, arguments)
   // cache[id] = undefined

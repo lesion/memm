@@ -3,7 +3,7 @@ import intersection from 'lodash.intersection'
 const browser = chrome || browser
 
 module.exports = {
-  // convert bookmarks into chrome omnibar suggestions
+  // convert bookmarks into omnibar suggestions
   bookmarks2suggestion (tags, bookmarks) {
     return bookmarks.map(b => {
       const foundTags = intersection(tags, b.tags)

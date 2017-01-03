@@ -1,5 +1,8 @@
 var path = require('path')
+var webpack = require('webpack')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
+var packageJson = require('./package.json')
+
 module.exports = {
   entry: {
     options: './app/options.js',
@@ -11,6 +14,10 @@ module.exports = {
     filename: '[name].js'
   },
   plugins: [
+    new webpack.DefinePlugin({  ENV: {
+        RELEASE: '"' + packageJson.version + '"'
+      }
+    }),
     new CopyWebpackPlugin([
       {from: 'app/popup.html'},
       {from: 'app/options.html'},
@@ -20,16 +27,14 @@ module.exports = {
   externals: { 'xmlhttprequest': 'XMLHttpRequest' },
   module: {
     loaders: [
+      { test: /\.json$/, loader: 'json' },
       { test: /\.js$/, exclude: /node_modules|dist/, loader: 'babel-loader?presets[]=es2015' },
       { test: /\.vue$/, loader: 'vue', exclude: /node_modules/ },
       { test: /\.png$/, loader: 'url' }
     ]
   },
-  // resolveLoader: { fallback: path.join(__dirname, 'node_modules') },
   devtool: '#source-map',
   resolve: {
-    // fallback: path.join(__dirname, 'node_modules'),
-    // resolve file extensions
     extensions: ['.js', '', '.vue']
   },
   vue: {

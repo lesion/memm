@@ -41,7 +41,7 @@ export default {
     return {
       tags: [],
       tag: '',
-      url: '',
+      url: '',  
       bookmarks: [],
       selected: -1,
       title: '',
@@ -124,26 +124,21 @@ export default {
         // cerco i match con la lista dei tag creati ora !
         browser.runtime.sendMessage( {msg: 'setTags', 
           title: this.title, url: this.url, tabId: this.tabId, tags: this.tags}, null, this.currentTabInfo)
-        // browser.runtime.sendMessage({msg:'getMatch', tags: this.tags},
-          // this.matchBookmarks)
       } 
 
-      // aggiungo il tag attuale !
+      // add current tag
       if (ev.which === ENTER) {
-         // lo pulisco
+         // cleaning it
         const tag = this.tag.replace(/[,\s]+/,'')
 
-        // se non e' vuoto e non esiste gia'
-        // lo aggiungo alla lista dei tag !
         if (tag && this.tags.indexOf(tag)===-1) {
-          // aggiungo il tag alla lista
           this.tags.push(tag)
         }
 
 
-        // se ho un selected, apro quello nel tab corrente !
         if (this.selectedBookmark) {
-          window.open(this.selectedBookmark.url)
+          browser.tabs.create({url: this.selectedBookmark.url, active: true})
+          // window.open(this.selectedBookmark.url)
         } else {
           // invio il messaggio al background
           browser.runtime.sendMessage( {msg: 'setTags', 
@@ -164,8 +159,8 @@ export default {
       if (info.related)
         this.bookmarks = info.related.filter(r => r.url !== this.url)
 
-      // controllo se selected punta ad un bookmark esistente
-      if (this.selected!==-1 && bookmarks.length<=this.selected) {
+      // controllo se selected punta ad un bookmark esistente lo riazzero
+      if (this.selected!==-1 && this.bookmarks.length<=this.selected) {
         this.selected = 0
       }
     }
