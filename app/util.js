@@ -20,13 +20,22 @@ module.exports = {
       tabs => { browser.tabs.update(tabs[0].id, {url}) })
   },
 
-  // get current tab info !
   getCurrentTabInfo () {
     return new Promise((resolve, reject) => {
-      browser.tabs.query({ currentWindow: true, active: true },
-        tabs => {
-          resolve({ url: tabs[0].url, title: tabs[0].title, id: tabs[0].id })
-        })
+      browser.tabs.query({active: true}, tabs => {
+        resolve({ url: tabs[0].url, title: tabs[0].title, id: tabs[0].id })
+      })
+    })
+  },
+
+  // get tab info !
+  getTabInfo (tabId) {
+    return new Promise((resolve, reject) => {
+      browser.tabs.get(tabId, resolve)
+        // tab => {
+        //   console.error('dentro query di getCurrentTabInfo ', tab)
+        //   resolve({ url: tab.url, title: tab.title, id: tab.id })
+        // })
     })
   },
   // extract oauth token

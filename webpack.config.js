@@ -30,7 +30,8 @@ module.exports = {
       { test: /\.json$/, loader: 'json' },
       { test: /\.js$/, exclude: /node_modules|dist/, loader: 'babel-loader?presets[]=es2015' },
       { test: /\.vue$/, loader: 'vue', exclude: /node_modules/ },
-      { test: /\.png$/, loader: 'url' }
+      { test: /\.png$/, loader: 'url' },
+      { test: /\.css$/, loader: 'style-loader!css-loader' },
     ]
   },
   devtool: '#source-map',

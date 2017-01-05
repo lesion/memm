@@ -37,6 +37,7 @@ function firstRun (e) {
   // open options window
   browser.runtime.openOptionsPage()
 }
+
 function main () {
   // initialize RemoteStorage
   rs = new RemoteStorage()
@@ -124,6 +125,7 @@ function fillOmnibox (input, cb) {
 }
 
 function updateCache (url, id) {
+  console.error('update cache di ' , url, id)
    // update cache for an url
   let ntags = 0
   return rs.bookmarks.archive.searchByURL(url)
@@ -146,13 +148,11 @@ function updateCache (url, id) {
   })
 }
 
-function cacheTab (id, updateProperty) {
+function cacheTab (tabId, updateProperty) {
   if (!updateProperty.status || updateProperty.status !== 'complete') return
-  util.getCurrentTabInfo()
-  .then(info => updateCache(info.url, id))
-  .catch(e => {
-    console.error('catch', e)
-  })
+  util.getTabInfo(tabId)
+  .then(info => updateCache(info.url, tabId))
+  .catch()
 }
 
 // TODO

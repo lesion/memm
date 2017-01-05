@@ -9,7 +9,7 @@
   },
   "browser_action":{
     "browser_style": true,
-    "default_icon": { "16" : "img/memm.png" },
+    "default_icon": { "16" : "img/offline.png", "40" : "img/memm.png" },
     "default_popup": "popup.html"
   },
   "omnibox": { "keyword" : "." },

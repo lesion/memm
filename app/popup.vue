@@ -51,10 +51,14 @@ export default {
   mounted () {
     util.getCurrentTabInfo()
     .then(info => {
+      console.error('dopo getCurrentTabInfo ', info)
       this.url = info.url
       this.title = info.title
       this.tabId = info.id
       browser.runtime.sendMessage({msg: 'getURLInfo', url: info.url, tabId: this.tabId}, null, this.currentTabInfo)
+    })
+    .catch(e => {
+      console.error('sono dentro il catch !', e)
     })
     this.$refs.tag.focus()
   },
@@ -150,14 +154,15 @@ export default {
       }
     },
     currentTabInfo (info) {
+
       if (!info) {
         this.tags = []
         this.bookmarks = []
+      } else {
+        this.tags = info.bookmark.tags
+        if (info.related)
+          this.bookmarks = info.related.filter(r => r.url !== this.url)
       }
-      // if (!info.ready) return
-      this.tags = info.bookmark.tags
-      if (info.related)
-        this.bookmarks = info.related.filter(r => r.url !== this.url)
 
       // controllo se selected punta ad un bookmark esistente lo riazzero
       if (this.selected!==-1 && this.bookmarks.length<=this.selected) {
@@ -174,7 +179,7 @@ $tag = #eee
 
 html
 body
-  font-family: Ubuntu
+  font-family: "Ubuntu Mono"
   background-color $orange
   margin 0px 0px
   padding 0px 0px
@@ -204,14 +209,14 @@ body
       cursor pointer
 
     .title
-      font-family: Ubuntu
+      font-family: "Ubuntu Mono"
       font-size: 18px
       font-weight: bold
       margin 0px 10px
       color orange
 
     input
-      font-family Ubuntu
+      font-family "Ubuntu Mono"
       font-size: 12px
       padding: 5px
       border: none
