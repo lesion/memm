@@ -51,15 +51,12 @@ export default {
   mounted () {
     util.getCurrentTabInfo()
     .then(info => {
-      console.error('dopo getCurrentTabInfo ', info)
       this.url = info.url
       this.title = info.title
       this.tabId = info.id
       browser.runtime.sendMessage({msg: 'getURLInfo', url: info.url, tabId: this.tabId}, null, this.currentTabInfo)
     })
-    .catch(e => {
-      console.error('sono dentro il catch !', e)
-    })
+    .catch()
     this.$refs.tag.focus()
   },
   methods: {

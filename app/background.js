@@ -98,6 +98,16 @@ function handleMessage (message, sender, cb) {
       })
 
       break
+
+    case 'connect':
+      log('[connect] ')
+      rs._init()
+      break
+
+    case 'disconnect':
+      log('[disconnect]')
+      rs._init()
+      break
   }
   return true
 }
@@ -125,7 +135,6 @@ function fillOmnibox (input, cb) {
 }
 
 function updateCache (url, id) {
-  console.error('update cache di ' , url, id)
    // update cache for an url
   let ntags = 0
   return rs.bookmarks.archive.searchByURL(url)

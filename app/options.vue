@@ -1,35 +1,35 @@
 <template lang="pug">
 #options
   .content
-    img(src='img/memm_40.png')
-    b.title memm ({{RELEASE}})
-
-    br
-    br    
-    vue-markdown.
-
-      You can use it as a bookmarks manager, tag your bookmarks and see related links while doing it.
-      __memm will NOT track you__. You can decide to save your data where you choose to:
-
+    strong.title memm {{RELEASE}} / settings
+    p Here's the place where you can change the few memm's settings:
+    p.
+      You can <a href='#' @click='omnibox = !omnibox'>{{omnibox?'disable':'enable'}}</a> omnibox,
+      <a href='#' @click='sync = !sync'>{{sync?'disable':'enable'}}</a> syncronization between your browser and memm or
+      just <a href='#' @click='importBookmarks'>import</a> your original bookmarks into memm once.
+      You're able to privately store your data into a remote storage of your choice:
     #widget
-    
-    span.
-      You have {{bookmarks.length}} bookmarks
 
-  .content.links
-    form.pure-form
-      fieldset
-        legend Filter your bookmarks
-        input(placeholder='Title')
-        select.pure-input-1-2
-          option(value='last_month') Last day
-          option(value='last_month') Last week
-          option(value='last_month') Last month
-        input(placeholder='Tags')
-  .content.links
-    ul
-      li(v-for='bookmark in bookmarks') 
-        a(:href="bookmark.url") {{bookmark.title}} [{{bookmark.tags}}]
+    
+
+    
+  //-   span.
+  //-     You have {{bookmarks.length}} bookmarks
+
+  //- .content.links
+  //-   form.pure-form
+  //-     fieldset
+  //-       legend Filter your bookmarks
+  //-       input(placeholder='Title')
+  //-       select.pure-input-1-2
+  //-         option(value='last_month') Last day
+  //-         option(value='last_month') Last week
+  //-         option(value='last_month') Last month
+  //-       input(placeholder='Tags')
+  //- .content.links
+  //-   ul
+  //-     li(v-for='bookmark in bookmarks') 
+  //-       a(:href="bookmark.url") {{bookmark.title}} [{{bookmark.tags}}]
 
     
 </template>
@@ -49,13 +49,11 @@ const browser = chrome || browser
 const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-umim41h4sit6abt871a92k13r1e1d33q.apps.googleusercontent.com'
 
-let rs = new RemoteStorage({logging: true})
+let rs = new RemoteStorage({logging: false})
 rs.access.claim('bookmarks', 'rw')
 
 rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
 rs.caching.enable('/bookmarks/')
-
-// rs.displayWidget({ domID: '#widget'})
 
 // oAuth dance (let RS use chrome.identity)
 RemoteStorage.Authorize.getLocation = browser.identity.getRedirectURL
@@ -75,35 +73,29 @@ module.exports = {
   data () {
     return { 
       rs,
+      omnibox: true,
+      sync: true,
       'RELEASE': ENV.RELEASE,
       bookmarks: []
     }
   },
   components: { VueMarkdown },
   mounted () {
+    rs.on('connected', this.connected)
+    rs.on('disconnected', this.disconnected)
     setTimeout( () => {
-      console.error('dentro mounted !')
-      rs.bookmarks.archive.getAll()
-      .then( bookmarks => {
-        console.error(bookmarks)
-        this.bookmarks = bookmarks
-        rs.displayWidget({ domID: 'widget'})
-      })
-
-    }, 500)
+        rs.displayWidget({ domID: 'widget', leaveOpen: true})
+    }, 10)
   },
   methods: {
-    connect: user => {
-      if (user=='dropbox') {
-        rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
-        rs.setBackend('dropbox')
-        rs.dropbox.connect()
-      } else if (user==='gdrive') {
-        let gdrive = new RemoteStorage.GoogleDrive(rs, GDRIVE_CLIENTID)
-        gdrive.connect()
-      } else {
-        rs.connect(user)
-      }
+    importBookmarks () {
+
+    },
+    disconnected: () => {
+      browser.runtime.sendMessage( {msg: 'disconnect'}, null )
+    },
+    connected: () => {
+      browser.runtime.sendMessage( {msg: 'connect'}, null )
     }
   }
 }
@@ -122,14 +114,12 @@ html
   padding: 12px
 
   .title
-    font-size: 30px
+    font-size: 22px
+    float: right
     
-  #widget
-    margin-right: auto
-    margin-left: auto
-    width: 50%
-    
-    
+  button
+    margin: 3px
+
   .content
     width: 60%
     margin-left: auto
