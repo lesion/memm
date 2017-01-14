@@ -1,6 +1,6 @@
 {
   "name": "memm",
-  "version": "1.1.4",
+  "version": "1.1.7",
   "keywords": "remotestorage, remotestorage.js, chrome extension",
   "description": "- ctrl + b, popup open .. - get current tab info (url, title) - search if already bookmarked and show saved tags - add tags - add url if not exists with the id inside url:hash - add for each specified tags the url id",
   "main": "background.js",
@@ -44,6 +44,7 @@
     "file-loader": "^0.9.0",
     "json-loader": "^0.5.4",
     "localstorejs": "^0.1.9",
+    "lodash": "^4.17.4",
     "lodash.debounce": "^4.0.8",
     "lodash.intersection": "^4.4.0",
     "lodash.partial": "^4.2.1",

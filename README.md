@@ -1,8 +1,5 @@
-## memm [W.I.P.]
+## memm
 ### A Chrome extension to tag your bookmarks and store it privately
-
-### Demo
-
 
 ### Features
 - You can add multiple tag to each bookmark
