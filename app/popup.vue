@@ -129,6 +129,8 @@ export default {
 
       // add current tag
       if (ev.which === ENTER) {
+
+
          // cleaning it
         const tag = this.tag.replace(/[,\s]+/,'')
 
@@ -143,7 +145,7 @@ export default {
         } else {
           // invio il messaggio al background
           browser.runtime.sendMessage( {msg: 'setTags', 
-            title: this.title, url: this.url, tags: this.tags, tabId: this.tabId}, null)
+            title: this.title, url: this.url, tags: this.tags, tabId: this.tabId, nocb: true})
         }
 
         // popup close !

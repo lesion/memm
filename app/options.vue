@@ -52,9 +52,11 @@ const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-umim41h4sit6abt871a92k13r1e1d33q.apps.googleusercontent.com'
 
 let rs = new RemoteStorage({logging: false})
-rs.access.claim('bookmarks', 'rw')
 
 rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
+rs.setApiKeys('googledrive', {clientId: GDRIVE_CLIENTID})
+
+rs.access.claim('bookmarks', 'rw')
 rs.caching.enable('/bookmarks/')
 
 // oAuth dance (let RS use chrome.identity)
@@ -98,7 +100,6 @@ module.exports = {
         }
 
         if (this.searchTags.length) {
-          console.error(intersection(this.searchTags, b.tags))
           if(intersection(this.searchTags, b.tags).length) {
             return true
           }
@@ -111,16 +112,13 @@ module.exports = {
   },
   components: { VueMarkdown },
   mounted () {
-    rs.on('connected', this.connected)
+    const that = this
+    rs.on('connected', () => this.connected(this))
     rs.on('disconnected', this.disconnected)
-    rs.bookmarks.archive.getAll()
-    .then(bookmarks => {
-
-      this.rsBookmarks = bookmarks.filter(b=>b!==true)
-    })
 
     rs.on('ready', () => {
         rs.displayWidget({ domID: 'widget', leaveOpen: true}) })
+
   },
   methods: {
     enter () {
@@ -180,8 +178,12 @@ module.exports = {
     disconnected: () => {
       browser.runtime.sendMessage( {msg: 'disconnect'}, null )
     },
-    connected: () => {
+    connected: (self) => {
       browser.runtime.sendMessage( {msg: 'connect'}, null )
+      rs.bookmarks.archive.getAll()
+      .then(bookmarks => {
+        self.rsBookmarks = bookmarks.filter(b=>b!==true)
+      })
     }
   }
 }
