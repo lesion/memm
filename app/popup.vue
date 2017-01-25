@@ -3,7 +3,7 @@
     .header
       img.link(src='img/memm_40.png',@click='openOptions')
       span.title memm 
-      input(type='text', v-model='tag', ref='tag', placeholder='put some tags here')
+      input(type='text', v-model='tag', ref='tag', placeholder='put some tags here', autofocus)
 
     .tags
       div.tag(v-for="(tag, index) in tags") 
@@ -153,12 +153,11 @@ export default {
       }
     },
     currentTabInfo (info) {
-
       if (!info) {
         this.tags = []
         this.bookmarks = []
       } else {
-        this.tags = info.bookmark.tags
+        this.tags = info.tags
         if (info.related)
           this.bookmarks = info.related.filter(r => r.url !== this.url)
       }
@@ -178,6 +177,7 @@ $tag = #eee
 
 html
 body
+  width: 350px
   font-family: "Ubuntu Mono"
   background-color $orange
   margin 0px 0px
@@ -228,7 +228,7 @@ body
 
   .url
     color: blue
-    font-size: 9px
+    font-size: 11px
 
   .tag
     background-color #c9c8d2

@@ -1,6 +1,6 @@
 {
   "name": "memm",
-  "version": "1.1.11",
+  "version": "1.2.0",
   "manifest_version": 2,
   "description": "",
   "options_ui": {
@@ -23,8 +23,7 @@
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
-        "linux": "Ctrl+M",
-        "default": "Ctrl+M"
+        "default": "Alt+Shift+M"
       }
     }
   },

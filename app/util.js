@@ -1,8 +1,9 @@
 /* global chrome */
-// import intersection from 'lodash.intersection'
+import {insersection} from 'lodash'
 const browser = chrome || browser
 
 module.exports = {
+  
   // convert bookmarks into omnibar suggestions
   bookmarks2suggestion (tags, bookmarks) {
     return bookmarks.map(b => {
@@ -32,10 +33,6 @@ module.exports = {
   getTabInfo (tabId) {
     return new Promise((resolve, reject) => {
       browser.tabs.get(tabId, resolve)
-        // tab => {
-        //   console.error('dentro query di getCurrentTabInfo ', tab)
-        //   resolve({ url: tab.url, title: tab.title, id: tab.id })
-        // })
     })
   },
   // extract oauth token

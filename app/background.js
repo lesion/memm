@@ -16,17 +16,17 @@ import 'remotestorage-module-bookmarks'
 import util from './util'
 import partial from 'lodash.partial'
 import debounce from 'lodash.debounce'
-import log from './log'
+// import log from './log'
+
+import Bookmark from './bookmarks'
 
 let currentTags = []
-
-// cache is url based
-let cache = {}
 
 // remoteStorage instance
 let rs
 
 // check if it's first time
+// TOFIX
 util.option.get('no_first_run')
 .catch(firstRun)
 
@@ -39,7 +39,7 @@ function firstRun (e) {
 
 function main () {
   // initialize RemoteStorage
-  rs = new RemoteStorage()
+  window.rs = rs = new RemoteStorage()
   rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
   rs.setApiKeys('googledrive', {clientId: GDRIVE_CLIENTID})
   rs.access.claim('bookmarks', 'rw')
@@ -52,18 +52,13 @@ function main () {
   rs.on('network-offline', partial(eventHandler, 'network-offline'))
   rs.on('ready', partial(eventHandler, 'ready'))
 
-  // rs.bookmarks.client.on('change', e => {
-    // console.error('change di bookmarks', e)
-  // })
+  Bookmark.setRS(rs)
 
   // a message is coming from popup
   browser.runtime.onMessage.addListener(handleMessage)
 
-  // cache needs an update when:
-  // - a tab is updated (load complete)
-  // - a tab is removed
-  browser.tabs.onRemoved.addListener(removeCachedTab)
-  browser.tabs.onUpdated.addListener(cacheTab)
+  // a tab is updated (new site loaded?)
+  browser.tabs.onUpdated.addListener(tabUpdated)
 
   // omnibox events handlers
   if (browser.omnibox) {
@@ -78,28 +73,28 @@ function eventHandler (event) {
   if (['disconnected', 'network-offline'].includes(event)) {
     browser.browserAction.setIcon({path: '/img/offline.png'})
   } else if (['connected', 'network-online'].includes(event)) {
+
     browser.browserAction.setIcon({path: '/img/online.png'})
+    Bookmark.sync()
   }
 }
 
 function handleMessage (message, sender, cb) {
   switch (message.msg) {
     case 'getURLInfo':
-      cb(cache[message.url])
+
+      cb(Bookmark.byURL(message.url))
       break
 
     case 'setTags':
-      rs.bookmarks.archive.store({url: message.url, title: message.title, tags: message.tags})
-      .then(() => updateCache(message.url, message.tabId))
-      .then(info => {
-        if (message.nocb) return
-        cb(info)
-      })
-      .catch(e => {
-        if (message.nocb) return
-        cb(undefined)
-      })
-
+      Bookmark.store({url: message.url, title: message.title, tags: message.tags})
+      const bookmark = Bookmark.byTags(message.tags, message.url)
+      if (!bookmark || bookmark.related.length === 0) {
+        browser.browserAction.setBadgeText({text: ``, tabId: message.tabId})
+      } else {
+        browser.browserAction.setBadgeText({text: `${bookmark.related.length}`, tabId: message.tabId})
+      }
+      cb(bookmark)
       break
 
     case 'connect':
@@ -114,13 +109,13 @@ function handleMessage (message, sender, cb) {
 }
 
 function enterOmnibox (url, type) {
-  // if (!util.isUrl(url)) {
-  //   rs.bookmarks.archive.store({url: currentTabInfo.url,
-  //     title: currentTabInfo.title,
-  //     tags: url.split(/[\s,]+/)})
-  // } else {
-  util.setCurrentTabUrl(url)
-  // }
+  if (!util.isUrl(url)) {
+    Bookmark.store({url: currentTabInfo.url,
+      title: currentTabInfo.title,
+      tags: url.split(/[\s,]+/)})
+  } else {
+    util.setCurrentTabUrl(url)
+  }
   return true
 }
 
@@ -130,60 +125,25 @@ function fillOmnibox (input, cb) {
 
   browser.omnibox.setDefaultSuggestion({description: `${tags.join(', ')} ❇`})
 
-  return rs.bookmarks.archive.searchByTags(tags)
-    .then(partial(util.bookmarks2suggestion, tags))
-    .then(cb)
-    .catch(e => {
-      console.error('CATCH!', e)
-    })
-}
-
-function updateCache (url, id) {
-   // update cache for an url
-  let ntags = 0
-  return rs.bookmarks.archive.searchByURL(url)
-  .then(bookmark => {
-    if (!bookmark || bookmark.tags.length === 0) {
-      cache[url] = undefined
-      browser.browserAction.setBadgeText({text: '', tabId: id})
-      return Promise.reject(undefined)
-    }
-
-    cache[url] = { bookmark }
-
-    ntags = bookmark.tags.length
-    return rs.bookmarks.archive.searchByTags(bookmark.tags)
-  })
-  .then(related => {
-    const nRelated = related.length ? related.length - 1 : 0
-    browser.browserAction.setBadgeText({text: `${nRelated}/${ntags}`, tabId: id})
-    cache[url].related = related
-    return cache[url]
-  })
+  util.bookmarks2suggestion(tags, Bookmark.byTags(tags))
+  .then(cb)
   .catch(e => {
-    console.error('CATCH updateCache!', url, id, e)
+    console.error(e)
   })
 }
 
-function cacheTab (tabId, updateProperty) {
-  if (!updateProperty.status || updateProperty.status !== 'complete') return
+function tabUpdated (tabId, updateProperty) {
+  if (!updateProperty.status || updateProperty.status !== 'loading') return
   util.getTabInfo(tabId)
   .then(info => {
-    const url = info.url
-    if (cache[url]) {
-      browser.browserAction.setBadgeText({text: `${cache[url].related.length}/${cache[url].bookmark.tags.length}`, tabId})
-      return cache[url]
+    const bookmark = Bookmark.byURL(info.url)
+    if (!bookmark || bookmark.related.length === 0) {
+      browser.browserAction.setBadgeText({text: ``, tabId})
+    } else {
+      browser.browserAction.setBadgeText({text: `${bookmark.related.length}`, tabId})
     }
-    return updateCache(info.url, tabId)
   })
   .catch(e => {
-    console.error('CATCH! cacheTab', e)
+    console.error(e)
   })
-}
-
-// TODO
-function removeCachedTab (id) {
-  // console.error('removed Cached ', id, arguments)
-  // cache[id] = undefined
-  // delete cache[id]
 }
