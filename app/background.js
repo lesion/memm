@@ -14,8 +14,7 @@ import RemoteStorage from 'remotestoragejs'
 import 'remotestorage-module-bookmarks'
 
 import util from './util'
-import partial from 'lodash.partial'
-import debounce from 'lodash.debounce'
+import {partial, debounce} from 'lodash'
 // import log from './log'
 
 import Bookmark from './bookmarks'
@@ -73,7 +72,6 @@ function eventHandler (event) {
   if (['disconnected', 'network-offline'].includes(event)) {
     browser.browserAction.setIcon({path: '/img/offline.png'})
   } else if (['connected', 'network-online'].includes(event)) {
-
     browser.browserAction.setIcon({path: '/img/online.png'})
     Bookmark.sync()
   }
@@ -109,13 +107,13 @@ function handleMessage (message, sender, cb) {
 }
 
 function enterOmnibox (url, type) {
-  if (!util.isUrl(url)) {
-    Bookmark.store({url: currentTabInfo.url,
-      title: currentTabInfo.title,
-      tags: url.split(/[\s,]+/)})
-  } else {
-    util.setCurrentTabUrl(url)
-  }
+  // if (!util.isUrl(url)) {
+  //   Bookmark.store({url: currentTabInfo.url,
+  //     title: currentTabInfo.title,
+  //     tags: url.split(/[\s,]+/)})
+  // } else {
+  util.setCurrentTabUrl(url)
+  // }
   return true
 }
 
