@@ -1,6 +1,11 @@
 ## memm
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f17aba2aee5a44e3aa8debeb192178f1)](https://www.codacy.com/app/lesion/memm?utm_source=github.com&utm_medium=referral&utm_content=lesion/memm&utm_campaign=badger)
+[![Code Climate](https://codeclimate.com/github/lesion/memm/badges/gpa.svg)](https://codeclimate.com/github/lesion/memm)
+
+
+[![Chrome Web Store](https://developer.chrome.com/webstore/images/ChromeWebStore_Badge_v2_206x58.png)](https://chrome.google.com/webstore/detail/memm/nmmkepllfhgjonodmhgaoaehnknoadfo)
+
 
 ### A Chrome extension to tag your bookmarks and store it privately
 
