@@ -1,20 +1,20 @@
 ## memm
+#### A Chrome extension to tag your bookmarks and store it privately
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f17aba2aee5a44e3aa8debeb192178f1)](https://www.codacy.com/app/lesion/memm?utm_source=github.com&utm_medium=referral&utm_content=lesion/memm&utm_campaign=badger)
 [![Code Climate](https://codeclimate.com/github/lesion/memm/badges/gpa.svg)](https://codeclimate.com/github/lesion/memm)
-
+[![license](https://img.shields.io/github/license/lesion/memm.svg)]()
 
 [![Chrome Web Store](https://developer.chrome.com/webstore/images/ChromeWebStore_Badge_v2_206x58.png)](https://chrome.google.com/webstore/detail/memm/nmmkepllfhgjonodmhgaoaehnknoadfo)
 
 
-### A Chrome extension to tag your bookmarks and store it privately
 
 ### Features
 - You can add multiple tag to each bookmark
 - Bookmarks are stored with [RemoteStorage](https://github.com/remotestorage/remotestorage.js)
 - While tagging, a list of matched url is shown
 - Omnibar support: press .<space> on urlbar and search by tag
-- Tag you bookmark with ctrl+m
+- Tag you bookmark with alt+shift+m
 
 ### Todo
 - Firefox porting
