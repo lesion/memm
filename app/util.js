@@ -1,13 +1,13 @@
 /* global chrome */
-import {insersection} from 'lodash'
+// import {insersection} from 'lodash'
 const browser = chrome || browser
 
 module.exports = {
-  
   // convert bookmarks into omnibar suggestions
   bookmarks2suggestion (tags, bookmarks) {
     return bookmarks.map(b => {
       // const foundTags = intersection(tags, b.tags)
+      // TODO: order by number of matched tags
       return {
         content: b.url,
         description: `<url>${b.url.replace('&', '&amp;')}</url> <match>${b.tags.join(', ')}</match>`
@@ -59,7 +59,7 @@ module.exports = {
       })
     },
     set (name, value) {
-      browser.storage.local.set({name: value})
+      browser.storage.local.set({[name]: value})
     }
   }
 }
