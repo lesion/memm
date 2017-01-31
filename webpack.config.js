@@ -27,20 +27,15 @@ module.exports = {
   externals: { 'xmlhttprequest': 'XMLHttpRequest' },
   module: {
     loaders: [
-      { test: /\.json$/, loader: 'json' },
+      { test: /\.json$/, loader: 'json-loader' },
       { test: /\.js$/, exclude: /node_modules|dist/, loader: 'babel-loader?presets[]=es2015' },
-      { test: /\.vue$/, loader: 'vue', exclude: /node_modules/ },
-      { test: /\.png$/, loader: 'url' },
+      { test: /\.vue$/, loader: 'vue-loader', exclude: /node_modules/ },
+      { test: /\.png$/, loader: 'url-loader' },
       { test: /\.css$/, loader: 'style-loader!css-loader' },
     ]
   },
   devtool: '#source-map',
   resolve: {
-    extensions: ['.js', '', '.vue']
+    extensions: ['.js', '.vue']
   },
-  vue: {
-    loaders: {
-      js: 'babel'
-    }
-  }
 }

@@ -31,7 +31,7 @@
             span.url {{bookmark.url}}
 
     a.fork(href='https://github.com/lesion/memm')
-      img(src="img/fork.padding",alt="Fork me on GitHub")
+      img(src="img/fork.png",alt="Fork me on GitHub")
     
 </template>
 
