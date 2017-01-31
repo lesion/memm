@@ -4,6 +4,8 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f17aba2aee5a44e3aa8debeb192178f1)](https://www.codacy.com/app/lesion/memm?utm_source=github.com&utm_medium=referral&utm_content=lesion/memm&utm_campaign=badger)
 [![Code Climate](https://codeclimate.com/github/lesion/memm/badges/gpa.svg)](https://codeclimate.com/github/lesion/memm)
 [![license](https://img.shields.io/github/license/lesion/memm.svg)]()
+[![dependencies Status](https://david-dm.org/lesion/memm/status.svg)](https://david-dm.org/lesion/memm)
+[![devDependencies Status](https://david-dm.org/lesion/memm/dev-status.svg)](https://david-dm.org/lesion/memm?type=dev)
 
 [![Chrome Web Store](https://developer.chrome.com/webstore/images/ChromeWebStore_Badge_v2_206x58.png)](https://chrome.google.com/webstore/detail/memm/nmmkepllfhgjonodmhgaoaehnknoadfo)
 
