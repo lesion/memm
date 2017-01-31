@@ -25,7 +25,6 @@ let currentTags = []
 let rs
 
 // check if it's first time
-// TOFIX
 util.option.get('no_first_run')
 .catch(firstRun)
 
@@ -107,6 +106,7 @@ function handleMessage (message, sender, cb) {
 }
 
 function enterOmnibox (url, type) {
+  // TODO: used to tag with omnibox
   // if (!util.isUrl(url)) {
   //   Bookmark.store({url: currentTabInfo.url,
   //     title: currentTabInfo.title,
