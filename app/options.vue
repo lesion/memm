@@ -114,6 +114,7 @@ module.exports = {
   mounted () {
     const that = this
     rs.on('connected', () => this.connected(this))
+    rs.on('ready', () => this.refresh(this))
     rs.on('disconnected', this.disconnected)
 
     rs.on('ready', () => {
@@ -180,6 +181,9 @@ module.exports = {
     },
     connected: (self) => {
       browser.runtime.sendMessage( {msg: 'connect'}, null )
+      this.refresh(self)
+    },
+    refresh: (self) => {
       rs.bookmarks.archive.getAll()
       .then(bookmarks => {
         self.rsBookmarks = bookmarks.filter(b=>b!==true)
