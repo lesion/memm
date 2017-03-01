@@ -1,6 +1,6 @@
 <template lang="pug">
 #options(@keydown='keydown')
-  .left.pure-u-1-5
+  .left.pure-u-2-5
     strong.title memm {{RELEASE}} / settings
 
     p Here's the place where you can change the few memm's settings:
@@ -12,7 +12,7 @@
       You're able to privately store your data into a remote storage of your choice:
     #widget
 
-  .right.pure-u-4-5
+  .right.pure-u-3-5
     .content
       form.pure-form
         fieldset
@@ -24,7 +24,8 @@
 
     .content.links
       ul(@mouseenter='enter')
-        li(v-for='(bookmark, index) in bookmarks') 
+        li(v-for='(bookmark, index) in bookmarks')
+          span.remove(@click='remove(bookmark.id)') x 
           a(:href="bookmark.url",:class='{selected: selected==index}') {{bookmark.title}}
             div.tag(v-for='tag in bookmark.tags')
               span {{tag}}
@@ -94,10 +95,10 @@ module.exports = {
       // sort by it
       const m = 0
       return this.rsBookmarks.filter( b => {
-        if(this.search) {
+        // if(this.search) {
           if (b.title.toLowerCase().indexOf(this.search.toLowerCase())>-1 ||
               b.url.toLowerCase().indexOf(this.search.toLowerCase())>-1) return true
-        }
+        // }
 
         if (this.searchTags.length) {
           if(intersection(this.searchTags, b.tags).length) {
@@ -176,6 +177,10 @@ module.exports = {
     importBookmarks () {
 
     },
+    remove (id) {
+      rs.bookmarks.archive.remove(id)
+      this.refresh(this)
+    },
     disconnected: () => {
       browser.runtime.sendMessage( {msg: 'disconnect'}, null )
     },
@@ -242,7 +247,7 @@ body,
       
     .links
       a
-        padding-left: 15px
+        padding-left: 35px
         width: 100%
         display: block
         font-family: "Open sans", Arial
@@ -254,6 +259,13 @@ body,
       a.selected
       a:hover
         background-color: #eee
+        
+      span.remove
+        float: left
+        margin-left: 10px
+        cursor: pointer
+        color: red
+        font-family: Arial
     
   .left
     padding 15px

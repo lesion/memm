@@ -15,7 +15,7 @@ const Bookmark = {
     .then(ret => {
       bookmarks = {}
       forOwn(ret, b => {
-        bookmarks[b.url] = {title: b.title, tags: b.tags, url: b.url}
+        bookmarks[b.url] = {title: b.title, tags: b.tags, url: b.url, id: b.id}
       })
     })
   },
@@ -25,6 +25,9 @@ const Bookmark = {
     return rs.bookmarks.archive.store({url: bookmark.url, tags: bookmark.tags, title: bookmark.title})
   },
 
+  remove (id) {
+    return rs.bookmarks.archive.remove(id)
+  },
   /**
    * return bookmarks matches tags
    * @param  {Array} tags
