@@ -1,6 +1,6 @@
 {
   "name": "memm",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "keywords": "remotestorage, remotestorage.js, chrome extension",
   "description": "- ctrl + b, popup open .. - get current tab info (url, title) - search if already bookmarked and show saved tags - add tags - add url if not exists with the id inside url:hash - add for each specified tags the url id",
   "main": "background.js",

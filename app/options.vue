@@ -1,5 +1,5 @@
 <template lang="pug">
-#options(@keydown='keydown')
+#options
   .left.pure-u-2-5
     strong.title memm {{RELEASE}} / settings
 
@@ -17,7 +17,7 @@
       form.pure-form
         fieldset
           legend You have {{rsBookmarks.length}} bookmarks | Filter your bookmarks
-          input(placeholder='Title | url | tags', type='text', v-model='search', autofocus)
+          input(placeholder='Title | url | tags', type='text', v-model='search', autofocus, @keydown='keydown')
           div.tag(v-for='(tag, index) in searchTags') 
             a(@click='searchTags.splice(index, 1)', href='#') x 
             span {{tag}}
@@ -186,7 +186,7 @@ module.exports = {
     },
     connected: (self) => {
       browser.runtime.sendMessage( {msg: 'connect'}, null )
-      this.refresh(self)
+      self.refresh(self)
     },
     refresh: (self) => {
       rs.bookmarks.archive.getAll()
