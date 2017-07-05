@@ -1,6 +1,6 @@
 {
   "name": "memm",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "keywords": "remotestorage, remotestorage.js, chrome extension",
   "description": "- ctrl + b, popup open .. - get current tab info (url, title) - search if already bookmarked and show saved tags - add tags - add url if not exists with the id inside url:hash - add for each specified tags the url id",
   "main": "background.js",
@@ -21,9 +21,9 @@
   "homepage": "https://github.com/lesion/remotestorage-bookmarks-chrome#readme",
   "dependencies": {
     "chrome-storage-promise": "^0.1.0",
-    "remotestoragejs": "git://github.com/remotestorage/remotestorage.js.git#feature/949-noglobal",
-    "remotestorage-widget": "git://github.com/remotestorage/remotestorage-widget.git#feature/no-global",
-    "remotestorage-module-bookmarks": "git://github.com/lesion/remotestorage-module-bookmarks.git"
+    "remotestorage-module-bookmarks": "git://github.com/lesion/remotestorage-module-bookmarks.git",
+    "remotestorage-widget": "git://github.com/remotestorage/remotestorage-widget.git",
+    "remotestoragejs": "git://github.com/remotestorage/remotestorage.js.git"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -52,7 +52,7 @@
     "vue": "^2.1.10",
     "vue-loader": "^10.1.2",
     "vue-markdown": "^2.1.2",
-    "vue-template-compiler": "^2.1.10",
+    "vue-template-compiler": "^2.3.4",
     "webpack": "^2.2.1",
     "ws": "^2.0.0"
   }
