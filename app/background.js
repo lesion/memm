@@ -11,7 +11,7 @@ const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-njmfirchq2gp4k33hqmja0ch6m4puf93.apps.googleusercontent.com'
 
 import RemoteStorage from 'remotestoragejs'
-import 'remotestorage-module-bookmarks'
+import Bookmarks from 'remotestorage-module-bookmarks'
 
 import util from './util'
 import {partial, debounce} from 'lodash'
@@ -37,7 +37,7 @@ function firstRun (e) {
 
 function main () {
   // initialize RemoteStorage
-  window.rs = rs = new RemoteStorage()
+  window.rs = rs = new RemoteStorage({logging: true,modules: [Bookmarks]})
   rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
   rs.setApiKeys('googledrive', {clientId: GDRIVE_CLIENTID})
   rs.access.claim('bookmarks', 'rw')
@@ -77,6 +77,7 @@ function eventHandler (event) {
 }
 
 function handleMessage (message, sender, cb) {
+  console.error('HANDLE MESSAGE:', sender)
   switch (message.msg) {
     case 'getURLInfo':
 
