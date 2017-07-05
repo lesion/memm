@@ -2,7 +2,7 @@
 // import {insersection} from 'lodash'
 const browser = chrome || browser
 
-module.exports = {
+export default {
   // convert bookmarks into omnibar suggestions
   bookmarks2suggestion (tags, bookmarks) {
     return bookmarks.map(b => {

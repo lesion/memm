@@ -16,7 +16,7 @@
     .content
       form.pure-form
         fieldset
-          legend You have {{rsBookmarks.length}} bookmarks | Filter your bookmarks
+          legend You have {{rsBookmarks.length}} total bookmarks and {{bookmarks.length}} shown | Filter your bookmarks
           input(placeholder='Title | url | tags', type='text', v-model='search', autofocus, @keydown='keydown')
           div.tag(v-for='(tag, index) in searchTags') 
             a(@click='searchTags.splice(index, 1)', href='#') x 
@@ -38,7 +38,7 @@
 
 <script>
 
-const util = require('./util')
+import util from './util'
 import VueMarkdown from 'vue-markdown'
 import RemoteStorage from 'remotestoragejs'
 import 'remotestorage-module-bookmarks'
@@ -74,7 +74,7 @@ RemoteStorage.Authorize.setLocation = url => {
 }
 
 rs.access.claim('bookmarks', 'rw')
-module.exports = {
+export default {
   data () {
     return { 
       rs,
@@ -95,16 +95,15 @@ module.exports = {
       // sort by it
       const m = 0
       return this.rsBookmarks.filter( b => {
+        if (this.searchTags.length) {
+          return (intersection(this.searchTags, b.tags).length > 0)
+        }
+
         // if(this.search) {
           if (b.title.toLowerCase().indexOf(this.search.toLowerCase())>-1 ||
               b.url.toLowerCase().indexOf(this.search.toLowerCase())>-1) return true
         // }
 
-        if (this.searchTags.length) {
-          if(intersection(this.searchTags, b.tags).length) {
-            return true
-          }
-        }
 
         return false
 

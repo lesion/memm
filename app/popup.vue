@@ -23,10 +23,8 @@
 </template>
 
 <script>
-'use strict'
-
 const browser = chrome || browser;
-const util = require('./util')
+import util from './util'
 
 export default {
   computed: {
