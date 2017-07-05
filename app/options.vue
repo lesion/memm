@@ -41,8 +41,8 @@
 import util from './util'
 import VueMarkdown from 'vue-markdown'
 import RemoteStorage from 'remotestoragejs'
-import 'remotestorage-module-bookmarks'
-import 'remotestorage-widget'
+import Bookmarks from 'remotestorage-module-bookmarks'
+import Widget from 'remotestorage-widget'
 import 'normalize.css/normalize.css'
 import 'purecss'
 import {intersection} from 'lodash'
@@ -52,7 +52,7 @@ const browser = chrome || browser
 const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-umim41h4sit6abt871a92k13r1e1d33q.apps.googleusercontent.com'
 
-let rs = new RemoteStorage({logging: false})
+let rs = new RemoteStorage({logging: true, modules: [Bookmarks]})
 
 rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
 rs.setApiKeys('googledrive', {clientId: GDRIVE_CLIENTID})
@@ -64,12 +64,13 @@ rs.caching.enable('/bookmarks/')
 RemoteStorage.Authorize.getLocation = browser.identity.getRedirectURL
 RemoteStorage.Authorize.setLocation = url => {
   browser.identity.launchWebAuthFlow({url, interactive: true}, responseUrl => {
-   if (!browser.runtime.lastError) {
-     const token = util.extractToken(responseUrl)
-     rs.remote.configure({token})
-   } else {
-    console.error(browser.runtime.lastError)
-   }
+    console.error(responseUrl)
+    if (!browser.runtime.lastError) {
+      const token = util.extractToken(responseUrl)
+      rs.remote.configure({token})
+    } else {
+      console.error(browser.runtime.lastError)
+    }
  })
 }
 
@@ -77,7 +78,7 @@ rs.access.claim('bookmarks', 'rw')
 export default {
   data () {
     return { 
-      rs,
+      // rs,
       omnibox: true,
       sync: true,
       'RELEASE': ENV.RELEASE,
@@ -117,8 +118,7 @@ export default {
     rs.on('ready', () => this.refresh(this))
     rs.on('disconnected', this.disconnected)
 
-    rs.on('ready', () => {
-        rs.displayWidget({ domID: 'widget', leaveOpen: true}) })
+    rs.on('ready', () => new Widget(rs, {domID:'widget', leaveOpen: true}) )
 
   },
   methods: {
@@ -188,6 +188,7 @@ export default {
       self.refresh(self)
     },
     refresh: (self) => {
+      console.error(rs)
       rs.bookmarks.archive.getAll()
       .then(bookmarks => {
         self.rsBookmarks = bookmarks.filter(b=>b!==true)
