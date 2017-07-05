@@ -10,10 +10,11 @@ module.exports = {
     background: './app/background',
   },
   output: {
-    path: 'dist',
+    path: __dirname + '/dist',
     filename: '[name].js'
   },
   plugins: [
+    new webpack.optimize.UglifyJsPlugin({minimize:true}),
     new webpack.DefinePlugin({  ENV: {
         RELEASE: '"' + packageJson.version + '"'
       }
@@ -30,11 +31,11 @@ module.exports = {
       { test: /\.json$/, loader: 'json-loader' },
       { test: /\.js$/, exclude: /node_modules|dist/, loader: 'babel-loader?presets[]=es2015' },
       { test: /\.vue$/, loader: 'vue-loader', exclude: /node_modules/ },
-      { test: /\.png$/, loader: 'url-loader' },
+      { test: /\.png$/, loader: 'file-loader?name=[path][name].[ext]' },
       { test: /\.css$/, loader: 'style-loader!css-loader' },
     ]
   },
-  devtool: '#source-map',
+  devtool: 'source-map',
   resolve: {
     extensions: ['.js', '.vue']
   },
