@@ -1,4 +1,4 @@
-const Vue = require('vue')
+import Vue from 'vue/dist/vue'
 const popup = require('./popup.vue')
 
 const vm = new Vue({
