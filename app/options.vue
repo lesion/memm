@@ -29,7 +29,7 @@
           a(:href="bookmark.url",:class='{selected: selected==index}') {{bookmark.title}}
             div.tag(v-for='tag in bookmark.tags')
               span {{tag}}
-            span.url {{bookmark.url}}
+
 
     a.fork(href='https://github.com/lesion/memm')
       img(src="img/fork.png",alt="Fork me on GitHub")
@@ -207,21 +207,20 @@ export default {
 html,
 body,
 #options
-  background: #eee
-  font-family: "Ubuntu Mono"
-  font-size: 18px
-  padding: 0px
-  margin: 0px
-  height: 100%
+  background #eee
+  font-family "Ubuntu Mono"
+  font-size 18px
+  padding 0px
+  margin 0px
   
 #options
-  display: flex
+  display flex
 
   .title
-    font-size: 22px
+    font-size 22px
     
   button
-    margin: 3px
+    margin 3px
 
   .right
     background #f9f9f9
@@ -232,40 +231,35 @@ body,
       padding-left: 15px
     
     .url
+      display block
       transition: opacity .2s
-      position: absolute
-      opacity: 0
-      margin-left: 5px
-      top: 10px
-      right: 160px
-      font-weight: bold
-      color: #333
-      max-width: 60%
-      overflow: hidden
-      line-height: 19px      
-
+      right 0px
+      height 3em
+      position fixed
+      bottom 0px
+      background-color #ccc
+      font-weight bold
+      color #333
+      overflow hidden
+      padding 5px
+      width 100%
       
     .links
       a
-        padding-left: 35px
-        width: 100%
-        display: block
-        font-family: "Open sans", Arial
+        padding-left 35px
+        width 100%
+        display block
+        word-wrap break-word
         
-      a.selected .url
-      a:hover .url
-        opacity: 1
-      
       a.selected
       a:hover
-        background-color: #eee
+        background-color #eee
         
       span.remove
-        float: left
-        margin-left: 10px
-        cursor: pointer
-        color: red
-        font-family: Arial
+        float left
+        margin-left 10px
+        cursor pointer
+        color red
     
   .left
     padding 15px
