@@ -14,7 +14,9 @@ import RemoteStorage from 'remotestoragejs'
 import Bookmarks from 'remotestorage-module-bookmarks'
 
 import util from './util'
-import {partial, debounce} from 'lodash'
+import partial from 'lodash-es/partial'
+import debounce from 'lodash-es/debounce'
+
 // import log from './log'
 
 import Bookmark from './bookmarks'

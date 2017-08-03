@@ -45,7 +45,7 @@ import Bookmarks from 'remotestorage-module-bookmarks'
 import Widget from 'remotestorage-widget'
 import 'normalize.css/normalize.css'
 import 'purecss'
-import {intersection} from 'lodash'
+import intersection from 'lodash-es/intersection'
 
 const browser = chrome || browser
 

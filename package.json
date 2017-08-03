@@ -16,11 +16,12 @@
   "author": "lesion <lesion@autistici.org> (http://lesion.github.io/)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/lesion/remotestorage-bookmarks-chrome/issues"
+    "url": "https://github.com/lesion/memm/issues"
   },
-  "homepage": "https://github.com/lesion/remotestorage-bookmarks-chrome#readme",
+  "homepage": "https://github.com/lesion/memm",
   "dependencies": {
     "chrome-storage-promise": "^0.1.0",
+    "lodash-es": "^4.17.4",
     "remotestorage-module-bookmarks": "git://github.com/lesion/remotestorage-module-bookmarks.git",
     "remotestorage-widget": "git://github.com/remotestorage/remotestorage-widget.git",
     "remotestoragejs": "git://github.com/remotestorage/remotestorage.js.git"
@@ -41,7 +42,6 @@
     "file-loader": "^0.10.0",
     "json-loader": "^0.5.4",
     "localstorejs": "^0.1.9",
-    "lodash": "^4.17.4",
     "normalize.css": "^5.0.0",
     "pug": "^2.0.0-beta10",
     "purecss": "^0.6.1",
@@ -49,11 +49,11 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^2.3.1",
     "url-loader": "^0.5.7",
-    "vue": "^2.1.10",
+    "vue": "^2.4.2",
     "vue-loader": "^10.1.2",
-    "vue-markdown": "^2.1.2",
-    "vue-template-compiler": "^2.3.4",
-    "webpack": "^2.2.1",
+    "vue-markdown": "^2.2.4",
+    "vue-template-compiler": "^2.4.2",
+    "webpack": "^2.7.0",
     "ws": "^2.0.0"
   }
 }

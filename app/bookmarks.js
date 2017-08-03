@@ -1,6 +1,9 @@
 'usr strict'
 
-import {intersection, filter, cloneDeep, forOwn} from 'lodash'
+import intersection from 'lodash-es/intersection'
+import filter from 'lodash-es/filter'
+import cloneDeep from 'lodash-es/cloneDeep'
+import forOwn from 'lodash-es/forOwn'
 
 let bookmarks = {}
 let rs = null

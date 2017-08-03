@@ -1,4 +1,4 @@
-import Vue from 'vue/dist/vue'
+import Vue from 'vue'
 const options = require('./options.vue')
 
 const vm = new Vue({
