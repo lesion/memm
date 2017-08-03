@@ -176,7 +176,7 @@ $tag = #eee
 html
 body
   width: 350px
-  font-family: "Ubuntu Mono"
+  font-family: Cantarell, Arial, sans-serif
   background-color $orange
   margin 0px 0px
   padding 0px 0px
@@ -206,18 +206,18 @@ body
       cursor pointer
 
     .title
-      font-family: "Ubuntu Mono"
-      font-size: 18px
-      font-weight: bold
+      font-family Cantarell, Arial, sans-serif
+      font-size 18px
+      font-weight bold
       margin 0px 10px
       color orange
 
     input
-      font-family "Ubuntu Mono"
-      font-size: 12px
-      padding: 5px
-      border: none
-      flex-grow: 1
+      font-family Cantarell, Arial, sans-serif
+      font-size 12px
+      padding 5px
+      border none
+      flex-grow 1
       background-color $tag
       border-radius 2px
 

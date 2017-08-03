@@ -208,7 +208,7 @@ html,
 body,
 #options
   background #eee
-  font-family "Ubuntu Mono"
+  font-family: Cantarell, Arial, sans-serif;
   font-size 18px
   padding 0px
   margin 0px
