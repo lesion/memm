@@ -215,6 +215,7 @@ body,
   
 #options
   display flex
+  height 100%
 
   .title
     font-size 22px
