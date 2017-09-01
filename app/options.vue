@@ -212,6 +212,7 @@ body,
   font-size 18px
   padding 0px
   margin 0px
+  height 100%
   
 #options
   display flex
