@@ -118,7 +118,7 @@ export default {
     rs.on('ready', () => this.refresh(this))
     rs.on('disconnected', this.disconnected)
 
-    rs.on('ready', () => new Widget(rs, {domID:'widget', leaveOpen: true}) )
+    new Widget(rs, {domID:'widget', leaveOpen: true})
 
   },
   methods: {
