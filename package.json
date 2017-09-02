@@ -24,14 +24,14 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
     "babel-preset-es2015": "^6.24.1",
-    "buble-loader": "^0.4.1",
     "chrome-storage-promise": "^0.1.0",
     "lodash-es": "^4.17.4",
     "remotestorage-module-bookmarks": "git://github.com/lesion/remotestorage-module-bookmarks.git",
     "remotestorage-widget": "git://github.com/remotestorage/remotestorage-widget.git",
-    "remotestoragejs": "git://github.com/remotestorage/remotestorage.js.git"
+    "remotestoragejs": "github:remotestorage/remotestorage.js"
   },
   "devDependencies": {
+    "buble-loader": "^0.4.1",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.1",
     "file-loader": "^0.10.0",
