@@ -1,11 +1,17 @@
 {
   "name": "memm",
-  "version": "1.2.4",
-  "keywords": "remotestorage, remotestorage.js, chrome extension",
-  "description": "- ctrl + b, popup open .. - get current tab info (url, title) - search if already bookmarked and show saved tags - add tags - add url if not exists with the id inside url:hash - add for each specified tags the url id",
+  "version": "1.3.0",
+  "keywords": [
+    "remotestorage",
+    "remotestorage.js",
+    "chrome extension",
+    "firefox extension",
+    "addons",
+    "bookmarks"
+  ],
+  "description": "- ctrl + alt + m, popup open .. - get current tab info (url, title) - search if already bookmarked and show saved tags - add tags - add url if not exists with the id inside url:hash - add for each specified tags the url id",
   "main": "background.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register --colors -w ./test/*.js",
     "build": "NODE_ENV=production webpack -p",
     "dev": "webpack -w"
   },
@@ -14,16 +20,12 @@
     "url": "git+https://github.com/lesion/memm.git"
   },
   "author": "lesion <lesion@autistici.org>",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/lesion/memm/issues"
   },
   "homepage": "https://github.com/lesion/memm",
   "dependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.6.0",
-    "babel-preset-es2015": "^6.24.1",
     "chrome-storage-promise": "^0.1.0",
     "lodash-es": "^4.17.4",
     "remotestorage-module-bookmarks": "git://github.com/lesion/remotestorage-module-bookmarks.git",
@@ -32,23 +34,23 @@
   },
   "devDependencies": {
     "buble-loader": "^0.4.1",
-    "copy-webpack-plugin": "^4.0.1",
-    "css-loader": "^0.26.1",
-    "file-loader": "^0.10.0",
+    "copy-webpack-plugin": "^4.5.0",
+    "css-loader": "^0.28.10",
+    "file-loader": "^1.1.11",
     "json-loader": "^0.5.7",
     "localstorejs": "^0.1.9",
-    "normalize.css": "^5.0.0",
-    "pug": "^2.0.0-rc.3",
-    "purecss": "^0.6.1",
-    "style-loader": "^0.13.1",
+    "normalize.css": "^8.0.0",
+    "pug": "^2.0.0",
+    "purecss": "^1.0.0",
+    "style-loader": "^0.20.2",
     "stylus": "^0.54.5",
-    "stylus-loader": "^2.3.1",
-    "url-loader": "^0.5.7",
-    "vue": "^2.4.2",
-    "vue-loader": "^10.1.2",
+    "stylus-loader": "^3.0.2",
+    "url-loader": "^1.0.1",
+    "vue": "^2.5.13",
+    "vue-loader": "^14.1.1",
     "vue-markdown": "^2.2.4",
-    "vue-template-compiler": "^2.4.2",
-    "webpack": "^3.5.5",
-    "ws": "^2.0.0"
+    "vue-template-compiler": "^2.5.13",
+    "webpack": "^4.1.0",
+    "ws": "^5.0.0"
   }
 }
