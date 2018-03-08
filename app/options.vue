@@ -26,7 +26,7 @@
       ul(@mouseenter='enter')
         li(v-for='(bookmark, index) in bookmarks')
           span.remove(@click='remove(bookmark.id)') x 
-          a(:href="bookmark.url",:class='{selected: selected==index}') {{bookmark.title}}
+          a(:href="bookmark.url",:class='{selected: selected==index}',target="_blank") {{bookmark.title}}
             div.tag(v-for='tag in bookmark.tags')
               span {{tag}}
 
@@ -47,34 +47,31 @@ import 'normalize.css/normalize.css'
 import 'purecss'
 import intersection from 'lodash-es/intersection'
 
-const browser = chrome || browser
+const BROWSER = chrome || browser
 
 const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-umim41h4sit6abt871a92k13r1e1d33q.apps.googleusercontent.com'
 
 let rs = new RemoteStorage({logging: true, modules: [Bookmarks]})
-
-rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
-rs.setApiKeys('googledrive', {clientId: GDRIVE_CLIENTID})
+rs.setApiKeys({dropbox: DROPBOX_APPKEY, googledrive: GDRIVE_CLIENTID})
 
 rs.access.claim('bookmarks', 'rw')
 rs.caching.enable('/bookmarks/')
 
 // oAuth dance (let RS use chrome.identity)
-RemoteStorage.Authorize.getLocation = browser.identity.getRedirectURL
+RemoteStorage.Authorize.getLocation = BROWSER.identity.getRedirectURL
 RemoteStorage.Authorize.setLocation = url => {
-  browser.identity.launchWebAuthFlow({url, interactive: true}, responseUrl => {
+  BROWSER.identity.launchWebAuthFlow({url, interactive: true}, responseUrl => {
     console.error(responseUrl)
-    if (!browser.runtime.lastError) {
+    if (!BROWSER.runtime.lastError  ) {
       const token = util.extractToken(responseUrl)
       rs.remote.configure({token})
     } else {
-      console.error(browser.runtime.lastError)
+      console.error(BROWSER.runtime.lastError)
     }
  })
 }
 
-rs.access.claim('bookmarks', 'rw')
 export default {
   data () {
     return { 
@@ -117,9 +114,8 @@ export default {
     rs.on('connected', () => this.connected(this))
     rs.on('ready', () => this.refresh(this))
     rs.on('disconnected', this.disconnected)
-
-    new Widget(rs, {domID:'widget', leaveOpen: true})
-
+    const widget = new Widget(rs)
+    widget.attach('widget')
   },
   methods: {
     enter () {
@@ -170,7 +166,7 @@ export default {
 
       if(ev.which === ENTER) {
         ev.preventDefault()
-        browser.tabs.create({url: this.bookmarks[this.selected].url, active: true})
+        BROWSER.tabs.create({url: this.bookmarks[this.selected].url, active: true})
       }
     },
     importBookmarks () {
@@ -181,10 +177,10 @@ export default {
       this.refresh(this)
     },
     disconnected: () => {
-      browser.runtime.sendMessage( {msg: 'disconnect'}, null )
+      util.sendMessage( {msg: 'disconnect'}, null )
     },
     connected: (self) => {
-      browser.runtime.sendMessage( {msg: 'connect'}, null )
+      util.sendMessage( {msg: 'connect'}, null )
       self.refresh(self)
     },
     refresh: (self) => {

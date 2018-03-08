@@ -1,14 +1,10 @@
-/* global chrome */
-'use strict'
-
 /**
  * background process is taking care of RemoteStorage communication
  * and omnibox
  */
 
-const browser = chrome || browser
-const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
-const GDRIVE_CLIENTID = '603557860486-njmfirchq2gp4k33hqmja0ch6m4puf93.apps.googleusercontent.com'
+/* global chrome, browser */
+'use strict'
 
 import RemoteStorage from 'remotestoragejs'
 import Bookmarks from 'remotestorage-module-bookmarks'
@@ -16,10 +12,11 @@ import Bookmarks from 'remotestorage-module-bookmarks'
 import util from './util'
 import partial from 'lodash-es/partial'
 import debounce from 'lodash-es/debounce'
-
-// import log from './log'
-
 import Bookmark from './bookmarks'
+
+const BROWSER = chrome || browser
+const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
+const GDRIVE_CLIENTID = '603557860486-njmfirchq2gp4k33hqmja0ch6m4puf93.apps.googleusercontent.com'
 
 let currentTags = []
 
@@ -34,14 +31,13 @@ function firstRun (e) {
   util.option.set('no_first_run', true)
 
   // open options window
-  browser.runtime.openOptionsPage()
+  BROWSER.runtime.openOptionsPage()
 }
 
 function main () {
   // initialize RemoteStorage
-  window.rs = rs = new RemoteStorage({logging: true,modules: [Bookmarks]})
-  rs.setApiKeys('dropbox', {appKey: DROPBOX_APPKEY})
-  rs.setApiKeys('googledrive', {clientId: GDRIVE_CLIENTID})
+  window.rs = rs = new RemoteStorage({logging: false, modules: [Bookmarks]})
+  rs.setApiKeys({dropbox: DROPBOX_APPKEY, googledrive: GDRIVE_CLIENTID})
   rs.access.claim('bookmarks', 'rw')
   rs.caching.enable('/bookmarks/')
 
@@ -55,15 +51,15 @@ function main () {
   Bookmark.setRS(rs)
 
   // a message is coming from popup
-  browser.runtime.onMessage.addListener(handleMessage)
+  BROWSER.runtime.onMessage.addListener(handleMessage)
 
   // a tab is updated (new site loaded?)
-  browser.tabs.onUpdated.addListener(tabUpdated)
+  BROWSER.tabs.onUpdated.addListener(tabUpdated)
 
   // omnibox events handlers
-  if (browser.omnibox) {
-    browser.omnibox.onInputChanged.addListener(debounce(fillOmnibox, 100, {leading: true}))
-    browser.omnibox.onInputEntered.addListener(enterOmnibox)
+  if (BROWSER.omnibox) {
+    BROWSER.omnibox.onInputChanged.addListener(debounce(fillOmnibox, 100, {leading: true}))
+    BROWSER.omnibox.onInputEntered.addListener(enterOmnibox)
   }
 }
 
@@ -71,30 +67,28 @@ main()
 
 function eventHandler (event) {
   if (['disconnected', 'network-offline'].includes(event)) {
-    browser.browserAction.setIcon({path: '/img/offline.png'})
+    BROWSER.browserAction.setIcon({path: '/img/offline.png'})
   } else if (['connected', 'network-online'].includes(event)) {
-    browser.browserAction.setIcon({path: '/img/online.png'})
+    BROWSER.browserAction.setIcon({path: '/img/online.png'})
     Bookmark.sync()
   }
 }
 
 function handleMessage (message, sender, cb) {
-  console.error('HANDLE MESSAGE:', sender)
   switch (message.msg) {
     case 'getURLInfo':
-
       cb(Bookmark.byURL(message.url))
       break
 
     case 'setTags':
       Bookmark.store({url: message.url, title: message.title, tags: message.tags})
-      const bookmark = Bookmark.byTags(message.tags, message.url)
-      if (!bookmark || bookmark.related.length === 0) {
-        browser.browserAction.setBadgeText({text: ``, tabId: message.tabId})
+      const bookmarks = Bookmark.byTags(message.tags)
+      if (!bookmarks) {
+        BROWSER.browserAction.setBadgeText({text: ``, tabId: message.tabId})
       } else {
-        browser.browserAction.setBadgeText({text: `${bookmark.related.length}`, tabId: message.tabId})
+        BROWSER.browserAction.setBadgeText({text: `${bookmarks.length}`, tabId: message.tabId})
       }
-      cb(bookmark)
+      cb(bookmarks)
       break
 
     case 'connect':
@@ -124,13 +118,9 @@ function fillOmnibox (input, cb) {
   var tags = input.split(/[\s,]+/)
   tags = tags.concat(currentTags)
 
-  browser.omnibox.setDefaultSuggestion({description: `${tags.join(', ')} ❇`})
+  BROWSER.omnibox.setDefaultSuggestion({description: `${tags.join(', ')} ❇`})
 
-  util.bookmarks2suggestion(tags, Bookmark.byTags(tags))
-  .then(cb)
-  .catch(e => {
-    console.error(e)
-  })
+  cb(util.bookmarks2suggestion(tags, Bookmark.byTags(tags)))
 }
 
 function tabUpdated (tabId, updateProperty) {
@@ -139,9 +129,9 @@ function tabUpdated (tabId, updateProperty) {
   .then(info => {
     const bookmark = Bookmark.byURL(info.url)
     if (!bookmark || bookmark.related.length === 0) {
-      browser.browserAction.setBadgeText({text: ``, tabId})
+      BROWSER.browserAction.setBadgeText({text: ``, tabId})
     } else {
-      browser.browserAction.setBadgeText({text: `${bookmark.related.length}`, tabId})
+      BROWSER.browserAction.setBadgeText({text: `${bookmark.related.length}`, tabId})
     }
   })
   .catch(e => {

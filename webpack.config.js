@@ -3,8 +3,11 @@ var webpack = require('webpack')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 var packageJson = require('./package.json')
 
-const bubbleOptions = {
-  presets: [['es2015', { loose: true, modules: false }]]
+const bubleOptions = {
+  transforms: {
+    modules: false
+  },
+  objectAssign: 'Object.assign'
 }
 
 module.exports = {
@@ -14,23 +17,22 @@ module.exports = {
     background: './app/background',
   },
   output: {
-    path: __dirname + '/dist',
+    path: path.join(__dirname, 'dist'),
     filename: '[name].js'
   },
   plugins: [
      new webpack.LoaderOptionsPlugin({
        vue: {
          js: {
-           buble: bubbleOptions
+          buble: bubleOptions
          }
        },
-       buble: bubbleOptions
+      buble: bubleOptions
      }),
     new webpack.optimize.UglifyJsPlugin({compress: { warnings: false}, output: { comments: false }, minimize: true, sourceMap: false}),
-    new webpack.DefinePlugin({  ENV: {
+    new webpack.DefinePlugin({ ENV: {
         RELEASE: '"' + packageJson.version + '"'
-      }
-    }),
+    }}),
     new CopyWebpackPlugin([
       {from: 'app/popup.html'},
       {from: 'app/options.html'},
@@ -39,15 +41,16 @@ module.exports = {
   ],
   externals: { 'xmlhttprequest': 'XMLHttpRequest' },
   module: {
-    loaders: [
+    rules: [
       { test: /\.json$/, loader: 'json-loader' },
-      { test: /\.js$/, exclude: /(node_modules|dist)/, loader: 'buble-loader', query: bubbleOptions },
+      { test: /\.js$/, exclude: /(node_modules|dist)/, loader: 'buble-loader', options: bubleOptions },
       { test: /\.vue$/, loader: 'vue-loader', exclude: /node_modules/ },
-      { test: /\.png$/, loader: 'file-loader?name=[path][name].[ext]' },
-      { test: /\.css$/, loader: 'style-loader!css-loader' },
+      { test: /\.png$/, loader: 'file-loader', query: { name: '[path][name].[ext]' } },
+      { test: /\.css$/, loader: 'style-loader!css-loader' }
     ]
   },
   resolve: {
+    alias: { 'vue$': 'vue/dist/vue.min' },
     extensions: ['.js', '.vue']
-  },
+  }
 }

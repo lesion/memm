@@ -1,7 +1,6 @@
-import Vue from 'vue/dist/vue'
-const popup = require('./popup.vue')
+import Vue from 'vue'
+import Popup from './popup.vue'
 
 const vm = new Vue({
-  components: {popup},
-  render: h => h(popup)
+  render: h => h(Popup)
 }).$mount('#mount')

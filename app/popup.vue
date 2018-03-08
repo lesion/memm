@@ -23,7 +23,7 @@
 </template>
 
 <script>
-const browser = chrome || browser;
+const BROWSER = chrome || browser;
 import util from './util'
 
 export default {
@@ -52,29 +52,31 @@ export default {
       this.url = info.url
       this.title = info.title
       this.tabId = info.id
-      browser.runtime.sendMessage({msg: 'getURLInfo', url: info.url, tabId: this.tabId}, null, this.currentTabInfo)
+      this.$nextTick( () => {
+        util.sendMessage({msg: 'getURLInfo', url: info.url, tabId: this.tabId})
+          .then(this.currentTabInfo)
+      })
     })
-    .catch()
     this.$refs.tag.focus()
   },
   methods: {
     openOptions () {
-      browser.runtime.openOptionsPage()
+      BROWSER.runtime.openOptionsPage()
     },
     removeTag (indexTag) {
       this.tags.splice(indexTag, 1)
 
-      // cerco i match con la lista dei tag creati ora !
-      // browser.runtime.sendMessage({msg:'getMatch', tags: this.tags},
-        // this.matchBookmarks)
-
-      // invio il setTags 
-      browser.runtime.sendMessage( {msg: 'setTags', 
-        title: this.title, url: this.url, tabId: this.tabId, tags: this.tags}, null, this.currentTabInfo)
+      util.sendMessage({
+        msg: 'setTags',
+        title: this.title,
+        url: this.url,
+        tabId: this.tabId,
+        tags: this.tags
+      })
+      .then(this.currentTabInfo)
     },
     matchBookmarks (bookmarks) {
       this.bookmarks = bookmarks.filter(b => b.url !== this.url)
-      // controllo se selected punta ad un bookmark esistente
       if (this.selected!==-1 && bookmarks.length<=this.selected)
         this.selected = 0
     },
@@ -103,46 +105,47 @@ export default {
 
 
       if(ev.which === SPACE || ev.which === COMMA || ev.which === TAB) {
-        // lo pulisco
         const tag = this.tag.replace(/[,\s]+/,'')
 
-        // devo controllare non sia vuoto e che non sia
-        // gia esistente !!
+        // check if empty or already there
         if (!tag || this.tags.indexOf(tag)!==-1) {
           ev.preventDefault()
           return
         }
 
-        // aggiungo il tag alla lista
         this.tags.push(tag)
 
-        // azzero l'input corrente
         this.tag = ''
         ev.preventDefault()
 
-        // cerco i match con la lista dei tag creati ora !
-        browser.runtime.sendMessage( {msg: 'setTags', 
-          title: this.title, url: this.url, tabId: this.tabId, tags: this.tags}, null, this.currentTabInfo)
+        const message = {
+          msg: 'setTags',
+          title: this.title,
+          url: this.url,
+          tabId: this.tabId,
+          tags: this.tags
+        }
+
+        util.sendMessage(message)
+          .then(this.currentTabInfo)
+
       } 
 
       // add current tag
       if (ev.which === ENTER) {
 
-
-         // cleaning it
+         // clear the input box
         const tag = this.tag.replace(/[,\s]+/,'')
 
         if (tag && this.tags.indexOf(tag)===-1) {
           this.tags.push(tag)
         }
 
-
         if (this.selectedBookmark) {
-          browser.tabs.create({url: this.selectedBookmark.url, active: true})
-          // window.open(this.selectedBookmark.url)
+          BROWSER.tabs.create({url: this.selectedBookmark.url, active: true})
         } else {
-          // invio il messaggio al background
-          browser.runtime.sendMessage( {msg: 'setTags', 
+          // send message to background
+          util.sendMessage( {msg: 'setTags',
             title: this.title, url: this.url, tags: this.tags, tabId: this.tabId, nocb: true})
         }
 
@@ -150,17 +153,14 @@ export default {
         window.close()
       }
     },
-    currentTabInfo (info) {
-      if (!info) {
-        this.tags = []
+    currentTabInfo (bookmarks) {
+      if (!bookmarks) {
+        console.error('lastError ',BROWSER.runtime.lastError)
         this.bookmarks = []
       } else {
-        this.tags = info.tags
-        if (info.related)
-          this.bookmarks = info.related.filter(r => r.url !== this.url)
+        this.bookmarks = bookmarks.filter(r => r.url !== this.url)
       }
 
-      // controllo se selected punta ad un bookmark esistente lo riazzero
       if (this.selected!==-1 && this.bookmarks.length<=this.selected) {
         this.selected = 0
       }

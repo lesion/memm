@@ -1,7 +1,6 @@
 import Vue from 'vue'
-const options = require('./options.vue')
+import Options from './options.vue'
 
 const vm = new Vue({
-  components: {options},
-  render: h => h(options)
+  render: h => h(Options)
 }).$mount('#mount')

@@ -1,6 +1,6 @@
 /* global chrome */
 // import {insersection} from 'lodash'
-const browser = chrome || browser
+const BROWSER = chrome || browser
 
 export default {
   // convert bookmarks into omnibar suggestions
@@ -10,20 +10,20 @@ export default {
       // TODO: order by number of matched tags
       return {
         content: b.url,
-        description: `<url>${b.url.replace('&', '&amp;')}</url> <match>${b.tags.join(', ')}</match>`
+        description: `${b.url.replace('&', '&amp;')} ${b.tags.join(', ')}`
       }
     })
   },
 
   // navigate to url
   setCurrentTabUrl (url) {
-    browser.tabs.query({ currentWindow: true, active: true },
-      tabs => { browser.tabs.update(tabs[0].id, {url}) })
+    BROWSER.tabs.query({ currentWindow: true, active: true },
+      tabs => { BROWSER.tabs.update(tabs[0].id, {url}) })
   },
 
   getCurrentTabInfo () {
     return new Promise((resolve, reject) => {
-      browser.tabs.query({active: true}, tabs => {
+      BROWSER.tabs.query({active: true}, tabs => {
         resolve({ url: tabs[0].url, title: tabs[0].title, id: tabs[0].id })
       })
     })
@@ -32,7 +32,7 @@ export default {
   // get tab info !
   getTabInfo (tabId) {
     return new Promise((resolve, reject) => {
-      browser.tabs.get(tabId, resolve)
+      BROWSER.tabs.get(tabId, resolve)
     })
   },
   // extract oauth token
@@ -45,13 +45,21 @@ export default {
     return (url.match(/^http[s]?:\/\//) !== null)
   },
 
+  sendMessage(msg) {
+    return new Promise((reject, resolve) => {
+      const msg = BROWSER.runtime.sendMessage( null, msg, null, resolve )
+      if (msg.then)
+        return msg
+    });
+  }
+
   // get/set extension options
   option: {
     get (name) {
       return new Promise((resolve, reject) => {
-        browser.storage.local.get(name, items => {
-          if (browser.runtime.lastError || !items[name]) {
-            reject(new Error(browser.runtime.lastError))
+        BROWSER.storage.local.get(name, items => {
+          if (BROWSER.runtime.lastError || !items[name]) {
+            reject(new Error(BROWSER.runtime.lastError))
           } else {
             resolve(items)
           }
@@ -59,7 +67,7 @@ export default {
       })
     },
     set (name, value) {
-      browser.storage.local.set({[name]: value})
+      BROWSER.storage.local.set({[name]: value})
     }
   }
 }

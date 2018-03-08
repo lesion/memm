@@ -36,10 +36,8 @@ const Bookmark = {
    * @param  {Array} tags
    * @return {Array} bookmarks
    */
-  byTags (tags, url) {
-    const bookmark = cloneDeep(bookmarks[url])
-    bookmark.related = Bookmark.getRelated(tags, url)
-    return bookmark
+  byTags (tags) {
+    return filter(bookmarks, b => intersection(b.tags, tags).length)
   },
 
   byURL (url) {
@@ -52,6 +50,7 @@ const Bookmark = {
   getRelated (tags, url) {
     return filter(bookmarks, b => {
       if (b.url === url) return false
+      // true if bookmark share tags
       return intersection(b.tags, tags).length
     })
   }
