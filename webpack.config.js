@@ -21,17 +21,17 @@ module.exports = {
     filename: '[name].js'
   },
   plugins: [
-     new webpack.LoaderOptionsPlugin({
-       vue: {
-         js: {
+    new webpack.LoaderOptionsPlugin({
+      vue: {
+        js: {
           buble: bubleOptions
-         }
-       },
+        }
+      },
       buble: bubleOptions
-     }),
+    }),
     new webpack.optimize.UglifyJsPlugin({compress: { warnings: false}, output: { comments: false }, minimize: true, sourceMap: false}),
     new webpack.DefinePlugin({ ENV: {
-        RELEASE: '"' + packageJson.version + '"'
+      RELEASE: '"' + packageJson.version + '"'
     }}),
     new CopyWebpackPlugin([
       {from: 'app/popup.html'},
