@@ -51,7 +51,7 @@ export default {
       if (msg.then)
         return msg
     });
-  }
+  },
 
   // get/set extension options
   option: {
