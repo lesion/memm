@@ -25,23 +25,21 @@
     "url": "https://github.com/lesion/memm/issues"
   },
   "homepage": "https://github.com/lesion/memm",
-  "dependencies": {
-    "chrome-storage-promise": "^0.1.0",
-    "lodash-es": "^4.17.4",
-    "remotestorage-module-bookmarks": "git://github.com/lesion/remotestorage-module-bookmarks.git",
-    "remotestorage-widget": "git://github.com/remotestorage/remotestorage-widget.git",
-    "remotestoragejs": "github:remotestorage/remotestorage.js"
-  },
   "devDependencies": {
     "buble-loader": "^0.4.1",
+    "chrome-storage-promise": "^0.1.0",
     "copy-webpack-plugin": "^4.5.0",
     "css-loader": "^0.28.10",
     "file-loader": "^1.1.11",
     "json-loader": "^0.5.7",
     "localstorejs": "^0.1.9",
+    "lodash-es": "^4.17.4",
     "normalize.css": "^8.0.0",
     "pug": "^2.0.0",
     "purecss": "^1.0.0",
+    "remotestorage-module-bookmarks": "git://github.com/lesion/remotestorage-module-bookmarks.git",
+    "remotestorage-widget": "^1.3.0",
+    "remotestoragejs": "^1.0.2",
     "style-loader": "^0.20.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
@@ -50,7 +48,7 @@
     "vue-loader": "^14.1.1",
     "vue-markdown": "^2.2.4",
     "vue-template-compiler": "^2.5.13",
-    "webpack": "^4.1.0",
+    "webpack": "^3.5.5",
     "ws": "^5.0.0"
   }
 }
