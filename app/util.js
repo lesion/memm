@@ -1,5 +1,6 @@
-/* global chrome */
+/* global chrome, browser */
 // import {insersection} from 'lodash'
+import Bookmarks from './bookmarks'
 const BROWSER = chrome || browser
 
 export default {
@@ -45,12 +46,29 @@ export default {
     return (url.match(/^http[s]?:\/\//) !== null)
   },
 
-  sendMessage(msg) {
-    return new Promise((reject, resolve) => {
-      const msg = BROWSER.runtime.sendMessage( null, msg, null, resolve )
-      if (msg.then)
-        return msg
-    });
+  sendMessage (msg) {
+    return new Promise((resolve, reject) => {
+      const ret = BROWSER.runtime.sendMessage(null, msg, null, resolve)
+      if (ret && ret.then) return ret
+    })
+  },
+
+  importBookmarks () {
+    function scanTree (item) {
+      if (item.url) {
+        console.log(`bookmark ${item.url} added`)
+        Bookmarks.store({url: item.url, tags: ['imported'], title: item.title})
+      }
+
+      // recursive import
+      if (item.children) {
+        item.children.forEach(scanTree)
+      }
+    }
+
+    BROWSER.bookmarks.getTree()
+      .then(bookmarkItems => scanTree(bookmarkItems[0]))
+
   },
 
   // get/set extension options

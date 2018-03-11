@@ -11,9 +11,13 @@
         span {{tag}}
 
     .bookmarks(:class='{selected: selected!=-1}')
+      a.bookmark(v-if='tags.length',
+        href='#',
+        click='addBookmark',
+        :class='{selected: selected == 0}') Add bookmark
       a.bookmark(v-for='(bookmark, index) in bookmarks',
-        :href='bookmark.url', 
-        :class='{selected: selected==index}') {{bookmark.title}}
+        :href='bookmark.url', target='parent'
+        :class='{selected: selected==index+1}') {{bookmark.title}}
 
     .tags
       div.tag(v-for='tag in selectedBookmark.tags')
@@ -29,8 +33,8 @@ import util from './util'
 export default {
   computed: {
     selectedBookmark () {
-      if(this.bookmarks[this.selected])
-        return this.bookmarks[this.selected]
+      if(this.bookmarks[this.selected-1])
+        return this.bookmarks[this.selected-1]
       else
         return false
     }
@@ -80,6 +84,31 @@ export default {
       if (this.selected!==-1 && bookmarks.length<=this.selected)
         this.selected = 0
     },
+    addBookmark () {
+       const tag = this.tag.replace(/[,\s]+/,'')
+
+        // check if empty or already there
+        if (tag && this.tags.indexOf(tag)!==-1) {
+          this.tags.push(tag)
+        }
+
+        if (!this.tags.length === 0) {
+          this.tags.push('untagged')
+        }
+
+        this.tag = ''
+        const message = {
+          msg: 'setTags',
+          title: this.title,
+          url: this.url,
+          tabId: this.tabId,
+          tags: this.tags
+        }
+
+        util.sendMessage(message)
+
+        window.close()
+    },
     keydown (ev) {
 
       const ARROW_UP    = 38
@@ -97,7 +126,7 @@ export default {
       }
 
       if(ev.which === ARROW_DOWN) {
-        if (this.selected === this.bookmarks.length-1)
+        if (this.selected === this.bookmarks.length)
           this.selected = -1
         else
           this.selected += 1
@@ -106,7 +135,7 @@ export default {
 
       if(ev.which === SPACE || ev.which === COMMA || ev.which === TAB) {
         const tag = this.tag.replace(/[,\s]+/,'')
-
+        console.error("Dentro space sticazzi ", this.tags)
         // check if empty or already there
         if (!tag || this.tags.indexOf(tag)!==-1) {
           ev.preventDefault()
@@ -118,21 +147,19 @@ export default {
         this.tag = ''
         ev.preventDefault()
 
-        const message = {
-          msg: 'setTags',
-          title: this.title,
-          url: this.url,
-          tabId: this.tabId,
-          tags: this.tags
-        }
-
-        util.sendMessage(message)
-          .then(this.currentTabInfo)
+        util.sendMessage({msg: 'searchTags', tags: this.tags})
+          .then( bookmarks => {
+            this.bookmarks = bookmarks.filter( b => b.url != this.url )
+          } )
 
       } 
 
       // add current tag
       if (ev.which === ENTER) {
+        if (this.selected == 0) {
+          this.addBookmark()
+          return
+        }
 
          // clear the input box
         const tag = this.tag.replace(/[,\s]+/,'')
@@ -145,24 +172,27 @@ export default {
           BROWSER.tabs.create({url: this.selectedBookmark.url, active: true})
         } else {
           // send message to background
-          util.sendMessage( {msg: 'setTags',
-            title: this.title, url: this.url, tags: this.tags, tabId: this.tabId, nocb: true})
+          util.sendMessage( {msg: 'searchTags', tags: this.tags } )
+            .then( bookmarks => this.bookmarks = bookmarks )
+            // title: this.title, url: this.url, tags: this.tags, tabId: this.tabId, nocb: true})
         }
 
         // popup close !
         window.close()
       }
     },
-    currentTabInfo (bookmarks) {
-      if (!bookmarks) {
+    currentTabInfo (info) {
+      console.error('Sono dentro currentTabInfo ', info)
+      if (!info) {
         console.error('lastError ',BROWSER.runtime.lastError)
         this.bookmarks = []
       } else {
-        this.bookmarks = bookmarks.filter(r => r.url !== this.url)
+        this.tags = info.tags
+        this.bookmarks = info.related.filter(r => r.url !== this.url)
       }
 
-      if (this.selected!==-1 && this.bookmarks.length<=this.selected) {
-        this.selected = 0
+      if (this.selected!==-1 && this.info.related.length<=this.selected) {
+        this.selected = -1
       }
     }
   }

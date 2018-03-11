@@ -80,13 +80,17 @@ function handleMessage (message, sender, cb) {
       cb(Bookmark.byURL(message.url))
       break
 
+    case 'searchTags':
+      cb(Bookmark.byTags(message.tags))
+      break
+
     case 'setTags':
       Bookmark.store({url: message.url, title: message.title, tags: message.tags})
-      const bookmarks = Bookmark.byTags(message.tags)
+      const bookmarks = Bookmark.byURL(message.url)
       if (!bookmarks) {
         BROWSER.browserAction.setBadgeText({text: ``, tabId: message.tabId})
       } else {
-        BROWSER.browserAction.setBadgeText({text: `${bookmarks.length}`, tabId: message.tabId})
+        BROWSER.browserAction.setBadgeText({text: `${bookmarks.related.length}`, tabId: message.tabId})
       }
       cb(bookmarks)
       break

@@ -1,6 +1,6 @@
 {
   "name": "memm",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "manifest_version": 2,
   "description": "",
   "options_ui": {
@@ -17,17 +17,16 @@
     "scripts": ["background.js"]
   },
   "icons": {
-    "16": "img/memm.png",
-    "48": "img/memm.png"
+    "16": "img/memm_16.png",
+    "48": "img/memm_48.png"
   },
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
-        "default": "Alt+Shift+M"
+        "default": "Alt+Shift+L"
       }
     }
   },
-  "content_security_policy":"script-src 'self' 'unsafe-eval'; object-src 'self'",
   "permissions": [
     "identity",
     "storage",
