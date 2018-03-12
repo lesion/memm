@@ -170,7 +170,7 @@ export default {
       }
     },
     importBookmarks () {
-
+      util.importBookmarks()
     },
     remove (id) {
       rs.bookmarks.archive.remove(id)

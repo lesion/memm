@@ -6,15 +6,14 @@ var packageJson = require('./package.json')
 const bubleOptions = {
   transforms: {
     modules: false
-  },
-  objectAssign: 'Object.assign'
+  }
 }
 
 module.exports = {
   entry: {
     options: './app/options.js',
     popup: './app/popup.js',
-    background: './app/background',
+    background: './app/background'
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -40,6 +39,7 @@ module.exports = {
     ])
   ],
   externals: { 'xmlhttprequest': 'XMLHttpRequest' },
+  devtool: 'source-map',
   module: {
     rules: [
       { test: /\.json$/, loader: 'json-loader' },
@@ -50,7 +50,7 @@ module.exports = {
     ]
   },
   resolve: {
-    alias: { 'vue$': 'vue/dist/vue.min' },
+    alias: { 'vue$': 'vue/dist/vue.runtime.esm' },
     extensions: ['.js', '.vue']
   }
 }

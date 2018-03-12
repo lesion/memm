@@ -66,9 +66,10 @@ export default {
       }
     }
 
-    BROWSER.bookmarks.getTree()
-      .then(bookmarkItems => scanTree(bookmarkItems[0]))
-
+    const bookmarkRoot = BROWSER.bookmarks.getTree(bookmarkItems => scanTree(bookmarkItems[0]))
+    if (bookmarkRoot && bookmarkRoot.then) {
+      bookmarkRoot.then(bookmarkItems => scanTree(bookmarkItems[0]))
+    }
   },
 
   // get/set extension options
