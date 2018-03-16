@@ -119,7 +119,7 @@ export default {
 
       if(ev.which == ARROW_UP) {
         if (this.selected === -1)
-          this.selected = this.bookmarks.length-1
+          this.selected = this.bookmarks.length
         else
           this.selected -= 1
       }
