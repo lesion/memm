@@ -25,7 +25,8 @@
     .content.links
       ul(@mouseenter='enter')
         li(v-for='(bookmark, index) in bookmarks')
-          span.remove(@click='remove(bookmark.id)') x 
+          span.remove(@click='remove(bookmark.id)')
+            i.mdi.mdi-close-circle
           a(:href="bookmark.url",:class='{selected: selected==index}',target="_blank") {{bookmark.title}}
             div.tag(v-for='tag in bookmark.tags')
               span {{tag}}
@@ -42,6 +43,7 @@ import util from './util'
 import VueMarkdown from 'vue-markdown'
 import RemoteStorage from 'remotestoragejs'
 import Bookmarks from 'remotestorage-module-bookmarks'
+import Bookmark from './bookmarks'
 import Widget from 'remotestorage-widget'
 import 'normalize.css/normalize.css'
 import 'purecss'
@@ -52,11 +54,13 @@ const BROWSER = chrome || browser
 const DROPBOX_APPKEY = 'anw6ijw3c9pdjse'
 const GDRIVE_CLIENTID = '603557860486-umim41h4sit6abt871a92k13r1e1d33q.apps.googleusercontent.com'
 
-let rs = new RemoteStorage({logging: true, modules: [Bookmarks]})
+let rs = new RemoteStorage({logging: false, modules: [Bookmarks]})
 rs.setApiKeys({dropbox: DROPBOX_APPKEY, googledrive: GDRIVE_CLIENTID})
 
 rs.access.claim('bookmarks', 'rw')
 rs.caching.enable('/bookmarks/')
+
+Bookmark.setRS(rs)
 
 // oAuth dance (let RS use chrome.identity)
 RemoteStorage.Authorize.getLocation = BROWSER.identity.getRedirectURL

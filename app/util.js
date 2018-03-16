@@ -1,6 +1,6 @@
 /* global chrome, browser */
 // import {insersection} from 'lodash'
-import Bookmarks from './bookmarks'
+import Bookmark from './bookmarks.js'
 const BROWSER = chrome || browser
 
 export default {
@@ -57,11 +57,11 @@ export default {
     function scanTree (item) {
       if (item.url) {
         console.log(`bookmark ${item.url} added`)
-        Bookmarks.store({url: item.url, tags: ['imported'], title: item.title})
+        Bookmark.store({url: item.url, tags: ['imported'], title: item.title})
       }
 
       // recursive import
-      if (item.children) {
+      if (item.children && item.children.length) {
         item.children.forEach(scanTree)
       }
     }

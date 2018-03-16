@@ -39,14 +39,14 @@ module.exports = {
     ])
   ],
   externals: { 'xmlhttprequest': 'XMLHttpRequest' },
-  devtool: 'source-map',
   module: {
     rules: [
       { test: /\.json$/, loader: 'json-loader' },
       { test: /\.js$/, exclude: /(node_modules|dist)/, loader: 'buble-loader', options: bubleOptions },
       { test: /\.vue$/, loader: 'vue-loader', exclude: /node_modules/ },
       { test: /\.png$/, loader: 'file-loader', query: { name: '[path][name].[ext]' } },
-      { test: /\.css$/, loader: 'style-loader!css-loader' }
+      { test: /\.css$/, loader: 'style-loader!css-loader' },
+      { test: /\.(eot|svg|ttf|woff|woff2)$/, loader: 'file-loader?name=public/fonts/[name].[ext]' }
     ]
   },
   resolve: {

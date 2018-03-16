@@ -9,7 +9,7 @@
     "addons",
     "bookmarks"
   ],
-  "description": "- ctrl + alt + m, popup open .. - get current tab info (url, title) - search if already bookmarked and show saved tags - add tags - add url if not exists with the id inside url:hash - add for each specified tags the url id",
+  "description": "- alt + shift + l, popup open .. - get current tab info (url, title) - search if already bookmarked and show saved tags - add tags - add url if not exists with the id inside url:hash - add for each specified tags the url id",
   "main": "background.js",
   "scripts": {
     "build": "NODE_ENV=production webpack -p",
@@ -49,6 +49,7 @@
     "vue-markdown": "^2.2.4",
     "vue-template-compiler": "^2.5.13",
     "webpack": "^3.5.5",
-    "ws": "^5.0.0"
+    "ws": "^5.0.0",
+    "mdi": "^2.1.99"
   }
 }

@@ -7,7 +7,6 @@
 
     .tags
       div.tag(v-for="(tag, index) in tags") 
-        a(href='#',@click='removeTag(index)') x 
         span {{tag}}
 
     .bookmarks(:class='{selected: selected!=-1}')
@@ -135,7 +134,6 @@ export default {
 
       if(ev.which === SPACE || ev.which === COMMA || ev.which === TAB) {
         const tag = this.tag.replace(/[,\s]+/,'')
-        console.error("Dentro space sticazzi ", this.tags)
         // check if empty or already there
         if (!tag || this.tags.indexOf(tag)!==-1) {
           ev.preventDefault()
@@ -182,7 +180,6 @@ export default {
       }
     },
     currentTabInfo (info) {
-      console.error('Sono dentro currentTabInfo ', info)
       if (!info) {
         console.error('lastError ',BROWSER.runtime.lastError)
         this.bookmarks = []
@@ -280,18 +277,20 @@ body
           background-color #313c47
 
     a.bookmark
-      transition: color .5s, background-color .5s
+      transition: color .5s, background-color .5s, border .5s
       display block
       color black
       padding 5px
       color #904646
       padding-left 10px
       word-break break-all
-      background-color: #27313b
+      background-color #27313b
+      border-left 3px solid transparent
 
       &.selected
         background-color #6a748b !important
         color white
+        border-left 3px solid orange
 
 
 </style>
