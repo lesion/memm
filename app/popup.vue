@@ -144,7 +144,6 @@ export default {
 
         this.tag = ''
         ev.preventDefault()
-
         util.sendMessage({msg: 'searchTags', tags: this.tags})
           .then( bookmarks => {
             this.bookmarks = bookmarks.filter( b => b.url != this.url )
@@ -154,7 +153,7 @@ export default {
 
       // add current tag
       if (ev.which === ENTER) {
-        if (this.selected == 0) {
+        if (this.selected == -1) {
           this.addBookmark()
           return
         }
@@ -181,7 +180,7 @@ export default {
     },
     currentTabInfo (info) {
       if (!info) {
-        console.error('lastError ',BROWSER.runtime.lastError)
+        console.error('lastError', BROWSER.runtime.lastError)
         this.bookmarks = []
       } else {
         this.tags = info.tags
