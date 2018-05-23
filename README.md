@@ -20,6 +20,22 @@ this extension is in development, use at your own risk
 - Omnibar support: press .<space> on urlbar and search by tag
 - Tag you bookmark with alt+shift+m
 
+### Hack & Build
+```
+# clone this repo
+git clone https://github.com/lesion/memm.git
+cd memm
+
+# install dependencies
+npm i
+
+# hack in dev mode (hotreload)
+npm run dev 
+
+# build (in dist/)
+npm run build
+
+```
 
 ### Big picture wishes ... (writing some notes here...)
 I want a way to link different types of resources:
