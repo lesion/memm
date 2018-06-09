@@ -46,7 +46,7 @@ function eventHandler (event) {
 function main () {
   // initialize RemoteStorage
   window.rs = rs = new RemoteStorage({
-    cache: false,
+    cache: true,
     logging: false,
     modules: [Bookmarks]
   })
