@@ -23,10 +23,6 @@ let currentTags = []
 // remoteStorage instance
 let rs
 
-// check if it's first time
-util.option.get('no_first_run')
-.catch(firstRun)
-
 function firstRun (e) {
   util.option.set('no_first_run', true)
 
@@ -34,9 +30,26 @@ function firstRun (e) {
   BROWSER.runtime.openOptionsPage()
 }
 
+// check if it's first time
+util.option.get('no_first_run')
+.catch(firstRun)
+
+function eventHandler (event) {
+  if (['disconnected', 'network-offline'].includes(event)) {
+    BROWSER.browserAction.setIcon({path: '/img/offline.png'})
+  } else if (['connected', 'network-online'].includes(event)) {
+    BROWSER.browserAction.setIcon({path: '/img/online.png'})
+    Bookmark.sync()
+  }
+}
+
 function main () {
   // initialize RemoteStorage
-  window.rs = rs = new RemoteStorage({logging: false, modules: [Bookmarks]})
+  window.rs = rs = new RemoteStorage({
+    cache: false,
+    logging: false,
+    modules: [Bookmarks]
+  })
   rs.setApiKeys({dropbox: DROPBOX_APPKEY, googledrive: GDRIVE_CLIENTID})
   rs.access.claim('bookmarks', 'rw')
   rs.caching.enable('/bookmarks/')
@@ -63,15 +76,13 @@ function main () {
   }
 }
 
-main()
+function fillOmnibox (input, cb) {
+  var tags = input.split(/[\s,]+/)
+  tags = tags.concat(currentTags)
 
-function eventHandler (event) {
-  if (['disconnected', 'network-offline'].includes(event)) {
-    BROWSER.browserAction.setIcon({path: '/img/offline.png'})
-  } else if (['connected', 'network-online'].includes(event)) {
-    BROWSER.browserAction.setIcon({path: '/img/online.png'})
-    Bookmark.sync()
-  }
+  BROWSER.omnibox.setDefaultSuggestion({description: `${tags.join(', ')} ❇`})
+
+  cb(util.bookmarks2suggestion(tags, Bookmark.byTags(tags)))
 }
 
 function handleMessage (message, sender, cb) {
@@ -118,14 +129,6 @@ function enterOmnibox (url, type) {
   return true
 }
 
-function fillOmnibox (input, cb) {
-  var tags = input.split(/[\s,]+/)
-  tags = tags.concat(currentTags)
-
-  BROWSER.omnibox.setDefaultSuggestion({description: `${tags.join(', ')} ❇`})
-
-  cb(util.bookmarks2suggestion(tags, Bookmark.byTags(tags)))
-}
 
 function tabUpdated (tabId, updateProperty) {
   if (!updateProperty.status || updateProperty.status !== 'loading') return
@@ -142,3 +145,5 @@ function tabUpdated (tabId, updateProperty) {
     console.error(e)
   })
 }
+
+main()
