@@ -81,7 +81,7 @@ function fillOmnibox (input, cb) {
 
   BROWSER.omnibox.setDefaultSuggestion({description: `${tags.join(', ')} ❇`})
 
-  cb(util.bookmarks2suggestion(tags, Bookmark.byTags(tags)))
+  Bookmark.byTags(tags).then( bookmarks => cb(util.bookmarks2suggestion(tags, bookmarks)))
 }
 
 function handleMessage (message, sender, cb) {
