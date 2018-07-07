@@ -39,7 +39,6 @@ function eventHandler (event) {
     BROWSER.browserAction.setIcon({path: '/img/offline.png'})
   } else if (['connected', 'network-online'].includes(event)) {
     BROWSER.browserAction.setIcon({path: '/img/online.png'})
-    Bookmark.sync()
   }
 }
 
@@ -134,12 +133,13 @@ function tabUpdated (tabId, updateProperty) {
   if (!updateProperty.status || updateProperty.status !== 'loading') return
   util.getTabInfo(tabId)
   .then(info => {
-    const bookmark = Bookmark.byURL(info.url)
-    if (!bookmark || bookmark.related.length === 0) {
-      BROWSER.browserAction.setBadgeText({text: ``, tabId})
-    } else {
-      BROWSER.browserAction.setBadgeText({text: `${bookmark.related.length}`, tabId})
-    }
+    const bookmark = Bookmark.byURL(info.url).then( bookmark => {
+      if (!bookmark || bookmark.related.length === 0) {
+        BROWSER.browserAction.setBadgeText({text: ``, tabId})
+      } else {
+        BROWSER.browserAction.setBadgeText({text: `${bookmark.related.length}`, tabId})
+      }
+    })
   })
   .catch(e => {
     console.error(e)

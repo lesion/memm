@@ -2,29 +2,22 @@
 
 import intersection from 'lodash-es/intersection'
 import filter from 'lodash-es/filter'
-import cloneDeep from 'lodash-es/cloneDeep'
-import forOwn from 'lodash-es/forOwn'
+import fromPairs from 'lodash-es/fromPairs'
+import map from 'lodash-es/map'
 
 
 const Bookmark = {
-  bookmarks: {},
   rs: null,
   setRS (remoteStorageInstance) {
     this.rs = remoteStorageInstance
   },
 
-  sync () {
-    this.rs.bookmarks.archive.getAll()
-    .then(ret => {
-      this.bookmarks = {}
-      forOwn(ret, b => {
-        this.bookmarks[b.url] = {title: b.title, tags: b.tags, url: b.url, id: b.id}
-      })
-    })
+  get bookmarks () {
+    return this.rs.bookmarks.archive.getAll()
+      .then( bookmarks => fromPairs(map(bookmarks, b => [b.url, b])) )
   },
 
   store (bookmark) {
-    this.bookmarks[bookmark.url] = bookmark
     return this.rs.bookmarks.archive.store({url: bookmark.url, tags: bookmark.tags, title: bookmark.title})
   },
 
@@ -37,23 +30,21 @@ const Bookmark = {
    * @return {Array} bookmarks
    */
   byTags (tags) {
-    return filter(this.bookmarks, b => intersection(b.tags, tags).length)
+    return this.bookmarks
+      .then( bookmarks => filter(bookmarks, b => intersection(b.tags, tags).length))
   },
 
   byURL (url) {
-    const bookmark = cloneDeep(this.bookmarks[url])
-    if (!bookmark) return false
-    bookmark.related = Bookmark.getRelated(bookmark.tags, url)
-    return bookmark
-  },
-
-  getRelated (tags, url) {
-    return filter(this.bookmarks, b => {
-      if (b.url === url) return false
-      // true if bookmark share tags
-      return intersection(b.tags, tags).length
+    return this.bookmarks.then( bookmarks => {
+      const bookmark = bookmarks[url]
+      if (!bookmark) return false
+      bookmark.related = filter(bookmarks, b => {
+        if (b.url === url) return false
+        return intersection(b.tags, bookmark.tags).length
+      })
+      return bookmark
     })
-  }
+  },
 }
 
 export default Bookmark
